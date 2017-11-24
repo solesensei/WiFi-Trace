@@ -1,0 +1,3 @@
+/home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles/edit_cache.dir
+/home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles/glm.dir
+/home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles/rebuild_cache.dir
