@@ -14,34 +14,6 @@ TARGET = easybmp argvparser
 # Avoid useless remaking of this Makefile.
 Makefile : ;
 
-# Liblinear library
-# Path to Liblinear library
-LIBLINEAR_LOCATION = $(EXTERNALS_BASEDIR)/liblinear-1.94
-# Makefile name of Liblinear
-LIBLINEAR_MAKEFILE = Makefile
-
-# Path to files in the Liblinear directory to import in the main project
-# Headers
-LIBLINEAR_HEADERS = linear.h
-# Statically compiled library (.a means archive)
-LIBLINEAR_LIBRARY = liblinear.a
-
-.PHONY: liblinear
-# Copy prepared for import files from Liblinear directory
-liblinear: $(LIBLINEAR_HEADERS) $(LIBLINEAR_LIBRARY)
-	cp $(addprefix $(LIBLINEAR_LOCATION)/, $(LIBLINEAR_HEADERS)) $(INCLUDE_DIR)/
-	cp $(addprefix $(LIBLINEAR_LOCATION)/, $(LIBLINEAR_LIBRARY)) $(LIBRARY_DIR)/
-
-.PHONY: $(LIBLINEAR_HEADERS)
-# Prepare library headers by calling to Liblinear makefile
-$(LIBLINEAR_HEADERS):
-	make -C $(LIBLINEAR_LOCATION) -f $(LIBLINEAR_MAKEFILE) $@
-
-.PHONY: $(LIBLINEAR_LIBRARY)
-# Prepare library by calling to Liblinear makefile
-$(LIBLINEAR_LIBRARY):
-	make -C $(LIBLINEAR_LOCATION) -f $(LIBLINEAR_MAKEFILE) $@
-
 # Argvparser library
 # Path to Argvparser library
 ARGVPARSER_LOCATION = $(EXTERNALS_BASEDIR)/argvparser
@@ -106,4 +78,3 @@ clean:
 	rm -f $(wildcard $(INCLUDE_DIR)/*) $(wildcard $(LIBRARY_DIR)/*)
 	make -C $(EASYBMP_LOCATION) -f $(EASYBMP_MAKEFILE) $@
 	make -C $(ARGVPARSER_LOCATION) -f $(ARGVPARSER_MAKEFILE) $@
-	make -C $(LIBLINEAR_LOCATION) -f $(LIBLINEAR_MAKEFILE) $@
