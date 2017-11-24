@@ -7,6 +7,7 @@
 int main(int argc, char** argv)
 {
   CTracer tracer;
+  Image pic = CTracer::LoadImageFromFile("./img/Lenna.bmp");
   // CScene scene;
 
 
@@ -38,5 +39,5 @@ int main(int argc, char** argv)
 
   // tracer.m_pScene = &scene;
   tracer.RenderImage(xRes, yRes);
-  tracer.SaveImageToFile("result.bmp");
+  tracer.SaveImageToFile(pic, "result.bmp");
 }
