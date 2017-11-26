@@ -16,11 +16,11 @@ Box::Box(const v3 vmin, const v3 vmax, const v3 col, const float ref, const floa
     transparent = trans;
 }
 
-Sphere::Sphere (v3 cen = v3(0.f, 0.f, 0.f),
-                const float r = 1.f,
-                const v3 col = v3(0.f, 0.f, 0.f), 
-                const float ref = 0.f, 
-                const float trans = 0.f)
+Sphere::Sphere (v3 cen,
+                const float r,
+                const v3 col, 
+                const float ref, 
+                const float trans)
 {
     center_pos = cen; 
     radius = r; 
@@ -53,13 +53,11 @@ bool Box::intersect (const SRay& r, float& t0, float& t1) const
     v3 inv_dir = 1.f/r.dir;
     float lo = inv_dir.x * (boxMin.x - r.orig.x);
     float hi = inv_dir.x * (boxMax.x - r.orig.x);
-    t0  = min(lo, hi);
-    t1 = max(lo, hi);
-
     float lo1 = inv_dir.y * (boxMin.y - r.orig.y);
     float hi1 = inv_dir.y * (boxMax.y - r.orig.y);
-    t0 = max(t0, min(lo1, hi1)); 
-    t1 = min(t1, max(lo1, hi1));
+
+    t0 = max(min(lo, hi), min(lo1, hi1)); 
+    t1 = min(max(lo, hi), max(lo1, hi1));
 
     float lo2 = inv_dir.z *(boxMin.z - r.orig.z);
     float hi2 = inv_dir.z *(boxMax.z - r.orig.z);
@@ -69,7 +67,7 @@ bool Box::intersect (const SRay& r, float& t0, float& t1) const
     return (t0 <= t1) && (t1 > 0);
 }
 
-void Box::getNorm (const v3& pHit, v3& nHit) const
+void Box::normalize (const v3& pHit, v3& nHit) const
 {
     nHit = v3(0);
     float eps = 1e-7;
@@ -85,7 +83,6 @@ void Box::getNorm (const v3& pHit, v3& nHit) const
         nHit.z = -1;
     else if ( fabs( pHit.z - boxMin.z ) < eps ) //front
         nHit.z = 1;
-    else { cerr << "getNorm-box" << endl; } 
 }
 
 bool Sphere::intersect (const SRay& r, float& t0, float& t1) const 
@@ -102,8 +99,55 @@ bool Sphere::intersect (const SRay& r, float& t0, float& t1) const
     t1 = tca + thc;
     return true;
 }
-void Sphere::getNorm(const v3& pHit, v3& nHit) const
+void Sphere::normalize (const v3& pHit, v3& nHit) const
 {
     nHit = pHit - center_pos;
     glm::normalize(nHit);
+}
+
+STriangle::STriangle(v3 a, v3 b, v3 c, v3 norm, v3 col)
+{
+	A = a;
+	B = b; 
+	C = c;
+	color = col;
+	normal = norm;
+}
+bool STriangle::intersect(const SRay& ray, float &t0, float &t1) const
+{
+	v3 AB = B - A;
+	v3 AC = C - A;
+	v3 pvec = glm::cross(ray.dir, AC);
+	float scalar = glm::dot(AB, pvec);
+
+	if (fabs(scalar) < 1e-4f) // ray parallel to triangle
+        return false;
+
+	v3 tvec = ray.orig - A;
+	float u = glm::dot(tvec,pvec) / scalar;
+    if (u < 0 || u > 1) 
+        return false;
+
+	v3 qvec = glm::cross(tvec, AB);
+	float v = glm::dot(ray.dir, qvec) / scalar;
+	if (v < 0 || u + v > 1) 
+        return false;
+
+	t1 = t0 = glm::dot(AC,qvec) / scalar;
+
+	return true; 
+} 
+
+void STriangle::normalize(const v3& pHit, v3& nHit) const
+{
+	 nHit = glm::normalize(pHit);
+}
+
+SRouter::SRouter(v3 Position,
+                 float Radius, 
+                 v3 Color,
+                 float signal_strength)
+{
+    sig_strength = signal_strength;
+    Sphere wifi(Position, Radius, Color, 0.f, 0.f);
 }

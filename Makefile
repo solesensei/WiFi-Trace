@@ -23,6 +23,7 @@ DEP_DIR = $(BUILD_DIR)/deps
 # Bridge - place for main project to pull headers and compiled libraries.
 # Headers must be placed into BRIDGE_LIBRARY_DIR before dependency generation
 # proceed. Libraries in BRIDGE_LIBRARY_DIR will be required on linkage step.
+BRIDGE_DIR = bridge
 BRIDGE_MAKE = bridge/Makefile
 BRIDGE_INCLUDE_DIR = bridge/include
 BRIDGE_LIBRARY_DIR = bridge/lib
@@ -31,7 +32,7 @@ BRIDGE_LIBRARY_DIR = bridge/lib
 BRIDGE_TARGETS = easybmp argvparser 
 
 # Link libraries gcc flag: library will be searched with prefix "lib".
-LDFLAGS = -leasybmp -largvparser
+LDFLAGS = -leasybmp -largvparser -lassimp
 
 # Add headers dirs to gcc search path
 CXXFLAGS += -I $(INCLUDE_DIR) -I $(BRIDGE_INCLUDE_DIR)
@@ -79,6 +80,7 @@ bridge.touch: $(wildcard $(BRIDGE_INCLUDE_DIR)/*) \
 # Rules for compiling targets
 $(BIN_DIR)/visualize: $(OBJFILES) bridge.touch	
 	$(CXX) $(CXXFLAGS) $(filter %.o, $^) -o $@ $(LDFLAGS)
+	cp $(BRIDGE_DIR)/config_file $(BIN_DIR)/
 
 # Pattern for generating dependency description files (*.d)
 $(DEP_DIR)/%.d: $(SRC_DIR)/%.cpp

@@ -86,7 +86,7 @@ SVoxelGrid::SVoxelGrid(v3 Topleft, v3 BotRight)
 }
 
 
-void SVoxelGrid::Init(){
+void SVoxelGrid::initialize(){
 	for(uint i = 0; i < num_z; i++)
 		for(uint j = 0; j < num_y; j++)
 			for(uint k = 0; k < num_x; k++){

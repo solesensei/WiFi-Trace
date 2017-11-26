@@ -3,19 +3,20 @@
 #include <string>
 #include "glm/glm.hpp"
 #include "types.h"
-// #include "scene.h"
+#include "scene.h"
 
 
 class CTracer
 {
+  std::tuple<uint,uint,uint> vec3_to_color(v3 vector);
 public:
   SRay MakeRay(uv2 pixelPos);  // Create ray for specified pixel
-  glm::vec3 TraceRay(SRay ray); // Trace ray, compute its color
-  void RenderImage(int xRes, int yRes);
-  static void SaveImageToFile(const Image &im, const char *path);
-  static Image LoadImageFromFile(const char *path);
-
+  std::tuple<uint,uint,uint> TraceRay(const SRay& ray);
+  void RenderImage(int xRes, int yRes, const char* name_of_image);
+  
 public:
-  SCamera m_camera;
-  // CScene* m_pScene;
+  SCamera camera;
+  CScene* pScene;
+
+  CTracer(const SCamera& cam, CScene* scene): camera(cam), pScene(scene){}
 };
