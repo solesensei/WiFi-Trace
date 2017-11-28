@@ -6,6 +6,7 @@ make
 cd build/bin
 
 # Launch project
-echo
+echo 
 echo Visuzalization begins
-./visualize --config_file config_file
+echo CONFIG: $1
+./visualize --config_file $1

@@ -50,9 +50,9 @@ int main(int argc, char** argv)
   int xRes = 1024;  // Default resolution
   int yRes = 768;
   
-  if(argc == 2) // There is input file in parameters
+  if(argc == 3) // There is input file in parameters
   {
-    FILE* file = fopen(argv[1], "r");
+    FILE* file = fopen(argv[2], "r");
     if(file)
     {
       int xResFromFile = 0;
