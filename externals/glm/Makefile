@@ -111,32 +111,47 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named glm
+# Target rules for targets named glm_dummy
 
 # Build rule for target.
-glm: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 glm
-.PHONY : glm
+glm_dummy: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 glm_dummy
+.PHONY : glm_dummy
 
 # fast build rule for target.
-glm/fast:
-	$(MAKE) -f CMakeFiles/glm.dir/build.make CMakeFiles/glm.dir/build
-.PHONY : glm/fast
+glm_dummy/fast:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/build
+.PHONY : glm_dummy/fast
 
 # target to build an object file
-core/dummy.o:
-	$(MAKE) -f CMakeFiles/glm.dir/build.make CMakeFiles/glm.dir/core/dummy.o
-.PHONY : core/dummy.o
+detail/dummy.o:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/detail/dummy.o
+.PHONY : detail/dummy.o
 
 # target to preprocess a source file
-core/dummy.i:
-	$(MAKE) -f CMakeFiles/glm.dir/build.make CMakeFiles/glm.dir/core/dummy.i
-.PHONY : core/dummy.i
+detail/dummy.i:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/detail/dummy.i
+.PHONY : detail/dummy.i
 
 # target to generate assembly for a file
-core/dummy.s:
-	$(MAKE) -f CMakeFiles/glm.dir/build.make CMakeFiles/glm.dir/core/dummy.s
-.PHONY : core/dummy.s
+detail/dummy.s:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/detail/dummy.s
+.PHONY : detail/dummy.s
+
+# target to build an object file
+detail/glm.o:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/detail/glm.o
+.PHONY : detail/glm.o
+
+# target to preprocess a source file
+detail/glm.i:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/detail/glm.i
+.PHONY : detail/glm.i
+
+# target to generate assembly for a file
+detail/glm.s:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/detail/glm.s
+.PHONY : detail/glm.s
 
 # Help Target
 help:
@@ -145,11 +160,14 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... glm"
+	@echo "... glm_dummy"
 	@echo "... rebuild_cache"
-	@echo "... core/dummy.o"
-	@echo "... core/dummy.i"
-	@echo "... core/dummy.s"
+	@echo "... detail/dummy.o"
+	@echo "... detail/dummy.i"
+	@echo "... detail/dummy.s"
+	@echo "... detail/glm.o"
+	@echo "... detail/glm.i"
+	@echo "... detail/glm.s"
 .PHONY : help
 
 

@@ -60,39 +60,39 @@ CMAKE_SOURCE_DIR = /home/sole/prj/CG/Task3/RT/externals/glm
 CMAKE_BINARY_DIR = /home/sole/prj/CG/Task3/RT/externals/glm
 
 #=============================================================================
-# Target rules for target CMakeFiles/glm.dir
+# Target rules for target CMakeFiles/glm_dummy.dir
 
 # All Build rule for target.
-CMakeFiles/glm.dir/all:
-	$(MAKE) -f CMakeFiles/glm.dir/build.make CMakeFiles/glm.dir/depend
-	$(MAKE) -f CMakeFiles/glm.dir/build.make CMakeFiles/glm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles --progress-num=1,2 "Built target glm"
-.PHONY : CMakeFiles/glm.dir/all
+CMakeFiles/glm_dummy.dir/all:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/depend
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles --progress-num=1,2,3 "Built target glm_dummy"
+.PHONY : CMakeFiles/glm_dummy.dir/all
 
 # Include target in all.
-all: CMakeFiles/glm.dir/all
+all: CMakeFiles/glm_dummy.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/glm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/glm.dir/all
+CMakeFiles/glm_dummy.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/glm_dummy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/sole/prj/CG/Task3/RT/externals/glm/CMakeFiles 0
-.PHONY : CMakeFiles/glm.dir/rule
+.PHONY : CMakeFiles/glm_dummy.dir/rule
 
 # Convenience name for target.
-glm: CMakeFiles/glm.dir/rule
+glm_dummy: CMakeFiles/glm_dummy.dir/rule
 
-.PHONY : glm
-
-# clean rule for target.
-CMakeFiles/glm.dir/clean:
-	$(MAKE) -f CMakeFiles/glm.dir/build.make CMakeFiles/glm.dir/clean
-.PHONY : CMakeFiles/glm.dir/clean
+.PHONY : glm_dummy
 
 # clean rule for target.
-clean: CMakeFiles/glm.dir/clean
+CMakeFiles/glm_dummy.dir/clean:
+	$(MAKE) -f CMakeFiles/glm_dummy.dir/build.make CMakeFiles/glm_dummy.dir/clean
+.PHONY : CMakeFiles/glm_dummy.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/glm_dummy.dir/clean
 
 .PHONY : clean
 
