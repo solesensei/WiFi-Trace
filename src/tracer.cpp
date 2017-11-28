@@ -121,5 +121,7 @@ void CTracer::RenderImage(int width, int height, const char* name)
 			SRay ray = MakeRay(j, i, width, height);
 			res_image(i, j) = TraceRay(ray);
 		}
-    pScene->SaveImageToFile(res_image, name);
+    
+    std::string path = string("../../img/") + name;
+    pScene->SaveImageToFile(res_image, path.c_str());
 }
