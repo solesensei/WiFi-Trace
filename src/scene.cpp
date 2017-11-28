@@ -10,14 +10,15 @@ CScene::CScene(const char* path)
 	LoadModel(path);
 }
 
-CScene::CScene(const CModel& loaded_model)
+CScene::CScene(CModel& loaded_model)
 {
-	*model = loaded_model;
+	model = &loaded_model;
 }
 
 void CScene::LoadModel(const char* path)
 {
-	*model = CModel(path);
+	CModel current_model(path);
+    model = &current_model;
 }
 
 void CScene::SaveImageToFile(const Image &im, const char *path)
@@ -72,6 +73,13 @@ CMesh::CMesh(std::vector<v3> Vertices, std::vector<v3> Normals)
 
 CModel::CModel(const char* filename)
 {
+    float max = std::numeric_limits<float>::max();
+ 	min_x = max;
+ 	min_y = max;
+ 	min_z = max;
+ 	max_x = -max;
+ 	max_y = -max;
+ 	max_z = -max;
     load(filename);
 }
 
@@ -86,22 +94,22 @@ void CModel::load(const char* filename)
         return;
     }
 
-    processNode(scene->mRootNode, scene);
+    ProcessNode(scene->mRootNode, scene);
 }
 
-void CModel::processNode(aiNode *node, const aiScene *scene)
+void CModel::ProcessNode(aiNode *node, const aiScene *scene)
 {
     for(uint i = 0; i < node->mNumMeshes; ++i){
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
-        meshes.push_back(processMesh(mesh, scene));			
+        meshes.push_back(ProcessMesh(mesh, scene));			
     }
     // then do the same for each of its children
     for(uint i = 0; i < node->mNumChildren; ++i){
-        processNode(node->mChildren[i], scene);
+        ProcessNode(node->mChildren[i], scene);
     }
 }  
 
-CMesh CModel::processMesh(aiMesh *mesh, const aiScene *scene)
+CMesh CModel::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 {
     std::vector<v3> vertices;
     std::vector<v3> normals;
@@ -121,7 +129,7 @@ CMesh CModel::processMesh(aiMesh *mesh, const aiScene *scene)
     return CMesh(vertices, normals);
 }  
 
-void CModel::SetUpTriangles()
+void CModel::SetUp()
 {
 	for(size_t i = 0; i < meshes.size(); ++i){
 		for(size_t j =0; j < meshes[i].vertices.size(); j+=3){

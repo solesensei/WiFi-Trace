@@ -9,7 +9,7 @@ CXXFLAGS += -Wformat-security -Wignored-qualifiers -Winit-self \
 		-Wnon-virtual-dtor -Wstrict-null-sentinel  \
 		-Woverloaded-virtual -Wsign-promo -Wextra -pedantic \
 		-Wold-style-cast \
-		# -Werror
+		#  -Werror
 
 # Directories with source code
 SRC_DIR = src
@@ -29,7 +29,7 @@ BRIDGE_INCLUDE_DIR = bridge/include
 BRIDGE_LIBRARY_DIR = bridge/lib
 
 # Which libraries to prepare for usage: targets must be defined in BRIDGE_MAKE.
-BRIDGE_TARGETS = easybmp argvparser 
+BRIDGE_TARGETS = glm easybmp argvparser assimp
 
 # Link libraries gcc flag: library will be searched with prefix "lib".
 LDFLAGS = -leasybmp -largvparser -lassimp

@@ -3,18 +3,39 @@
 #include "geometry.h"
 #include "tracer.h"
 #include "types.h"
+#include "argvparser.h"
+
+using CommandLineProcessing::ArgvParser;
+using std::cerr;
+using std::endl;
 
 #define MODEL_PATH "../../models/room.obj"
 
 int main(int argc, char** argv)
 {
+    /* Arguments parsing */
+  ArgvParser cmd;
+  cmd.setIntroductoryDescription("WiFi router signal coverage simulation");
+  cmd.setHelpOption("h", "help", "print this help message");
+  cmd.defineOption("config_file", "File with set up configuration", ArgvParser::OptionRequiresValue);
+  cmd.defineOptionAlternative("config_file", "c");
+  int result = cmd.parse(argc, argv);
+
+      // Check for errors or help option
+  if (result){
+      cerr << cmd.parseErrorDescription(result) << endl;
+      return result;
+  }
+
     /* Camera and Light creation */
   SCamera camera(v3(0.f, 0.f, 15.f));
   SLight light(v3(0.f, 20.f, -10.f), 3000.f);
     
     /* Model setting up */
   CModel model(MODEL_PATH);
-  model.SetUpTriangles();
+  model.SetUp();
+  SVoxelGrid grid(model.topleft, model.botright);
+  grid.initialize();
     
     /* Scene creation */
   CScene scene(MODEL_PATH);
@@ -24,7 +45,7 @@ int main(int argc, char** argv)
 		scene.figures.push_back(&(model.triangles[i]));
     
     /* Ray Tracer render setting up */
-  CTracer tracer(camera, &scene);
+  CTracer tracer(camera, &scene, grid);
 
   int xRes = 1024;  // Default resolution
   int yRes = 768;
@@ -52,5 +73,5 @@ int main(int argc, char** argv)
   else
     printf("No config! Using default parameters.\r\n");
 
-  tracer.RenderImage(xRes, yRes, "result");
+  tracer.RenderImage(xRes, yRes, "result.bmp");
 }

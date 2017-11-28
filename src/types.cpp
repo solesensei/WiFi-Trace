@@ -50,7 +50,7 @@ float SVoxel::distance(SRay& ray, float start, float end)
 {
 	float depth = start;
     double eps = 1e-7;
-	for(int i=0; i < 255; i++){
+	for(int i=0; i < STEPS; i++){
 		v3 point = ray.orig + v3(ray.dir.x*depth, \
                                  ray.dir.y*depth, \
                                  ray.dir.z*depth);
@@ -91,7 +91,7 @@ void SVoxelGrid::initialize(){
 		for(uint j = 0; j < num_y; j++)
 			for(uint k = 0; k < num_x; k++){
 				v3 offset = topleft + v3(voxel_edge*0.5,voxel_edge*0.5,voxel_edge*0.5);
-				grid.push_back(
+				voxels.push_back(
 					SVoxel(
 						offset+v3(voxel_edge*k,-voxel_edge*j,-voxel_edge*i),
 						voxel_edge,

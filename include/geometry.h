@@ -55,7 +55,14 @@ struct SRouter : public Sphere
             float Radius = 1.f, 
             v3 Color = v3(1.f, 0.f, 0.f),
             float signal_strength = 10000);
+	float power(v3 point);
+	void fill_grid(SVoxelGrid& grid, uint num);
+	void march(SRay& ray,
+               SVoxelGrid& grid, 
+               float start, 
+               float end);
 };
+
 
 // struct SRouter : public Box 
 // {

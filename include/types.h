@@ -15,7 +15,7 @@
 #include "EasyBMP.h"
 
 #define PI 3.1415926535897932384626433832795028841971
-
+#define STEPS 255
 typedef Matrix<std::tuple<uint, uint, uint>> Image;
 
 typedef glm::vec3 v3;
@@ -126,7 +126,7 @@ struct SVoxel
 
 struct SVoxelGrid
 {
-	std::vector<SVoxel> grid;
+	std::vector<SVoxel> voxels;
 	v3 topleft;
 	v3 botright;
 	float voxel_edge;
@@ -137,4 +137,5 @@ struct SVoxelGrid
     void initialize();
 	int find(v3 point);
 	void draw(v3 point);
+	void print();
 };
