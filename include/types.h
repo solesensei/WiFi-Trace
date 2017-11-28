@@ -48,12 +48,13 @@ struct SRay
 {
     v3 orig;
     v3 dir;
-    
-    SRay(const v3& origin, const v3& direction): orig(origin), dir(direction)
+    float strength;
+
+    SRay(const v3& origin, const v3& direction, float Strength = 0.f): orig(origin), dir(direction)
     {}
     SRay (): orig(v3()), dir(v3())
     {}
-    
+    void set_strength(float s);
     static SRay build_ray(float x, float y, float width, float height, const SCamera& camera);
 };
 
@@ -81,10 +82,8 @@ struct SPhong
             // direction that a perfectly reflected ray of light would take from this point on the surface
             // glm::reflect(a,b) : return a - 2*(a,b)*b
             // dir_reflect = 2*(dir_light,normal)*normal - dir_light
-		v3 dir_reflect = glm::normalize(glm::reflect(-dir_light, normal));  		
+		v3 dir_reflect = glm::normalize(-glm::reflect(dir_light, normal));  		
         
-        assert(glm::reflect(-dir_light, normal) != -glm::reflect(dir_light, normal)); // test
-
         float dot_light_normal = glm::dot(dir_light, normal); 
 		float dot_reflect_view = glm::dot(dir_reflect, dir_view); 
 

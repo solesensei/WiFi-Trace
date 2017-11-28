@@ -102,7 +102,7 @@ bool Sphere::intersect (const SRay& r, float& t0, float& t1) const
 void Sphere::normalize (const v3& pHit, v3& nHit) const
 {
     nHit = pHit - center_pos;
-    glm::normalize(nHit);
+    nHit = glm::normalize(nHit);
 }
 
 STriangle::STriangle(v3 a, v3 b, v3 c, v3 norm, v3 col)
@@ -140,29 +140,30 @@ bool STriangle::intersect(const SRay& ray, float &t0, float &t1) const
 
 void STriangle::normalize(const v3& pHit, v3& nHit) const
 {
-	 nHit = glm::normalize(pHit);
+//	 nHit = glm::normalize(pHit);
+	 nHit = glm::normalize(normal);
 }
 
 SRouter::SRouter(v3 Position,
                  float Radius, 
                  v3 Color,
-                 float signal_strength)
+                 float signal_strength):
+    Sphere(Position, Radius, Color)
 {
     sig_strength = signal_strength;
-    Sphere wifi(Position, Radius, Color, 0.f, 0.f);
 }
 
-void SRouter::fill_grid(SVoxelGrid& grid, uint num)
+void SRouter::fill_grid(std::vector<Figure*> figures, SVoxelGrid& grid, uint num)
 {
 	for(uint i=0; i < num ; i++){
 		//construct random ray
-		float x = -1.0f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
-		float y = -1.0f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
-		float z = -1.0f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
-		//cout << x << " " << y << " " << z << endl;
-		v3 direction = glm::normalize(v3(x,y,z));
-		SRay random_ray = SRay(center_pos, direction);
-		march(random_ray,grid, 0.f, 100.f);
+		float x = -1.f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
+		float y = -1.f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
+		float z = -1.f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
+
+        v3 direction = glm::normalize(v3(x,y,z));
+		SRay random_ray = SRay(center_pos, direction, sig_strength);
+		march(random_ray, figures, grid, 0);
 	}
 }
 
@@ -170,26 +171,43 @@ float SRouter::power(v3 point)
 {
 	float distance = glm::length(point - center_pos);
 	if(distance < radius)
-		return sig_strength;
+		return 0.f;
 	else
 		return std::min(sig_strength, sig_strength/(distance*distance));
 }
 
-void SRouter::march(SRay& ray,SVoxelGrid& grid, float start, float end){
-	float depth = start;
-	float step = 0.05; // 1cm
-	for(int i=0; i < STEPS; i++){
-		v3 point = ray.orig + v3(ray.dir.x*depth,ray.dir.y*depth,ray.dir.z*depth);
-		depth+=step;
-
+void SRouter::march(SRay& ray, std::vector<Figure*> figures, SVoxelGrid& grid, int r_step){
+	float depth = 0.f;
+	float d_step = 0.02f;
+    float end = 100.f;
+    float t_close = 100.f;
+    size_t index;
+    if (check_intersect(ray, figures, t_close, index)){
+        end = t_close;
+        if(r_step < 2){
+            v3 pHit = ray.orig + ray.dir*t_close;
+            v3 nHit;
+            figures[index]->normalize(pHit,nHit);
+            pHit += nHit*0.01f;
+            figures[index]->normalize(pHit,nHit);            
+            v3 refl_dir = glm::normalize(glm::reflect(ray.dir, nHit));
+            float s = power(pHit);
+            SRay refl_ray(pHit, refl_dir, s);
+            march(refl_ray, figures, grid, r_step+1);
+ 	    }
+    }
+	for(int i = 0; i < STEPS; ++i){
+		v3 point = ray.orig + v3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
+		depth += d_step;
+        ray.strength = power(point);
 		if(depth > end){
 			return;
 		}
 
 		int index = grid.find(point);
 		if(index > 0){
-			if(grid.voxels[index].value < power(point))
-			   grid.voxels[index].value = power(point);
+			if(grid.voxels[index].value < ray.strength)
+			   grid.voxels[index].value = ray.strength;
 		}
 		else{
 			// out of grid
@@ -198,4 +216,25 @@ void SRouter::march(SRay& ray,SVoxelGrid& grid, float start, float end){
 		
 	}
 	return;
+}
+
+bool SRouter::check_intersect(const SRay& ray,std::vector<Figure*> figures, float& t_close, size_t& i_close)
+{
+    bool isInter = false;
+	float t0 = 100.f;
+    float t1 = t0;
+	for(size_t i = 0; i < figures.size(); ++i)
+    {
+			if(figures[i]->intersect(ray, t0, t1))
+            {
+				if (t0 < 0) t0 = t1;
+                if ((t0 < t_close) && (t0 > 0.f))
+                {
+                    isInter = true;
+                    t_close = t0;
+                    i_close = i;
+                }
+			}
+	}
+	return isInter;
 }

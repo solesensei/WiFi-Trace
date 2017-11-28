@@ -26,7 +26,7 @@ public:
 
 class CMesh
 {
- public:
+public:
 	std::vector<v3> vertices;
 	std::vector<v3> normals;
 
@@ -41,7 +41,7 @@ class CModel
 public: 	
  	void load(const char* filename);
  	void ProcessNode(aiNode *node, const aiScene *scene);
- 	CMesh ProcessMesh(aiMesh *mesh, const aiScene *scene);
+ 	CMesh ProcessMesh(aiMesh *mesh);
  	void SetUp();
 	void CheckBoundingBox(glm::vec3 vertice);
  	void FindBoundingBox();

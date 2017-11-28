@@ -12,9 +12,15 @@ SCamera::SCamera(v3 Pos, v3 Up, v3 Right, float FOV):
     fov (FOV)
 {}
 
+void SRay::set_strength(float s)
+{
+	strength = s;
+}
+
 SRay SRay::build_ray(float x, float y, float width, float height, const SCamera& camera)
 {
 	float ratio = width / height;
+
 	v3 ray_dir = camera.front + 
                  camera.right * ((x+0.5f) / width - 0.5f) * ratio - 
                  camera.up * ((y+0.5f) / height - 0.5f);
@@ -77,7 +83,7 @@ SVoxelGrid::SVoxelGrid(v3 Topleft, v3 BotRight)
 
 	float min_axis = min(x, min(y,z));
 
-	voxel_edge = min_axis/100;
+	voxel_edge = min_axis/10;
 
 		//calculate number of voxels per axis
 	num_x = x/voxel_edge;

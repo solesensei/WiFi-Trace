@@ -19,7 +19,7 @@ std::tuple<uint,uint,uint> CTracer::vec3_to_color(v3 vector)
 v3 CTracer::MarchRay(const SRay& ray, v3 color, float t_closest){
 
     float depth = 0.0f;
-    float step = t_closest/100000; // 1cm
+    float step = 0.005; // 1cm
     int index;
     int previous_index;
     bool first = true;
@@ -40,7 +40,7 @@ v3 CTracer::MarchRay(const SRay& ray, v3 color, float t_closest){
         if(index>0){
             v3 wificolor = v3(0.f, 1.f, 0.f)*grid.voxels[index].value;
             wificolor = v3(0.f, glm::min(255.f,wificolor.y), 0.f);
-            float alpha =0.04;
+            float alpha =0.06;
             color = color*(1-alpha) + wificolor*alpha;
 
         }
@@ -74,39 +74,41 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
 
         }
     }
-
     if(!isInter) return vec3_to_color(res_color); // no intersection, returns black
 
     v3 pHit = ray.orig + ray.dir*t_closest; // hit point 
     v3 nHit; // normal at hit point
     pScene->figures[i_closest]->normalize(pHit, nHit);
     nHit = glm::dot(ray.dir, nHit) > 0 ? -nHit : nHit; // reverse normal if its inside 
-    pHit = pHit + nHit*1e-4f;
+    pHit = pHit + nHit*1.e-4f;
    
     SRay shadow_ray;
     for(uint k = 0; k < pScene->lights.size(); ++k){
             // processing shadow parts
         v3 lightdir = pScene->lights[k].pos - pHit;
         lightdir = glm::normalize(lightdir);
-        shadow_ray = SRay (pHit, lightdir); 
-        bool isShadow = false;
-        for(uint i = 0; i < pScene->figures.size(); ++i)
-            if ( pScene->figures[i]->intersect(shadow_ray, t0, t1)){
-                    isShadow = true; 
-                    break;
-            }
-        if( !isShadow ){
-            float dif = glm::dot(nHit, lightdir); 
-            res_color += MarchRay(shadow_ray, pScene->figures[i_closest]->color * std::max(0.f, dif)*pScene->lights[k].intens, t_closest);
-            v3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
-                                          v3(0.05f, 0.05f, 0.05f), // specular reflection constant
-                                          5.f,  // shininess constant for this material
-                                          nHit, 
-                                          pHit,
-                                          camera,
-                                          pScene->lights[k]);
-            res_color += phong_color;
-        }
+        // shadow_ray = SRay (pHit, lightdir); 
+        // bool isShadow = false;
+        // for(uint i = 0; i < pScene->figures.size(); ++i)
+            // if ( pScene->figures[i]->intersect(shadow_ray, t0, t1)){
+                    // isShadow = true; 
+                    // break;
+            // }
+        // if( !isShadow ){
+            float dif = glm::dot(lightdir, nHit);
+            if(dif < 0.f) 
+                return vec3_to_color(v3(0,0,0));
+            SRay eye(pHit, ray.orig - pHit); 
+            res_color = MarchRay(eye, pScene->figures[i_closest]->color * dif* 255.f, t_closest);
+            // v3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
+            //                               v3(0.05f, 0.05f, 0.05f), // specular reflection constant
+            //                               5.f,  // shininess constant for this material
+            //                               nHit, 
+            //                               pHit,
+            //                               camera,
+            //                               pScene->lights[k]);
+            // res_color += phong_color;
+        // }
     }
     return vec3_to_color(res_color);
 }

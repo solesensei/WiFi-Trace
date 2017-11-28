@@ -103,7 +103,7 @@ void CModel::ProcessNode(aiNode *node, const aiScene *scene)
 {
     for(uint i = 0; i < node->mNumMeshes; ++i){
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
-        meshes.push_back(ProcessMesh(mesh, scene));			
+        meshes.push_back(ProcessMesh(mesh));			
     }
     // then do the same for each of its children
     for(uint i = 0; i < node->mNumChildren; ++i){
@@ -111,7 +111,7 @@ void CModel::ProcessNode(aiNode *node, const aiScene *scene)
     }
 }  
 
-CMesh CModel::ProcessMesh(aiMesh *mesh, const aiScene *scene)
+CMesh CModel::ProcessMesh(aiMesh *mesh)
 {
     std::vector<v3> vertices;
     std::vector<v3> normals;
