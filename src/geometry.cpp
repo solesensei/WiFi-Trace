@@ -151,3 +151,51 @@ SRouter::SRouter(v3 Position,
     sig_strength = signal_strength;
     Sphere wifi(Position, Radius, Color, 0.f, 0.f);
 }
+
+void SRouter::fill_grid(SVoxelGrid& grid, uint num)
+{
+	for(uint i=0; i < num ; i++){
+		//construct random ray
+		float x = -1.0f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
+		float y = -1.0f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
+		float z = -1.0f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
+		//cout << x << " " << y << " " << z << endl;
+		v3 direction = glm::normalize(v3(x,y,z));
+		SRay random_ray = SRay(center_pos, direction);
+		march(random_ray,grid, 0.f, 100.f);
+	}
+}
+
+float SRouter::power(v3 point)
+{
+	float distance = glm::length(point - center_pos);
+	if(distance < radius)
+		return sig_strength;
+	else
+		return std::min(sig_strength, sig_strength/(distance*distance));
+}
+
+void SRouter::march(SRay& ray,SVoxelGrid& grid, float start, float end){
+	float depth = start;
+	float step = 0.05; // 1cm
+	for(int i=0; i < STEPS; i++){
+		v3 point = ray.orig + v3(ray.dir.x*depth,ray.dir.y*depth,ray.dir.z*depth);
+		depth+=step;
+
+		if(depth > end){
+			return;
+		}
+
+		int index = grid.find(point);
+		if(index > 0){
+			if(grid.voxels[index].value < power(point))
+			   grid.voxels[index].value = power(point);
+		}
+		else{
+			// out of grid
+			return;
+		}
+		
+	}
+	return;
+}

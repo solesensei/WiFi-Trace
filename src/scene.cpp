@@ -95,6 +95,8 @@ void CModel::load(const char* filename)
     }
 
     ProcessNode(scene->mRootNode, scene);
+    SetUp();
+    FindBoundingBox();
 }
 
 void CModel::ProcessNode(aiNode *node, const aiScene *scene)
@@ -136,8 +138,38 @@ void CModel::SetUp()
 			v3 a = meshes[i].vertices[j];
 			v3 b = meshes[i].vertices[j+1];
 			v3 c = meshes[i].vertices[j+2];
+            CheckBoundingBox(a);
+			CheckBoundingBox(b);
+			CheckBoundingBox(c);
 			STriangle temp(a,b,c,meshes[i].normals[j]);
 			triangles.push_back(temp);
 		}
 	}
 }
+
+void CModel::CheckBoundingBox(v3 vertice){
+	if(vertice.x < min_x){
+		min_x = vertice.x;
+	}
+	if(vertice.y < min_y){
+		min_y = vertice.y;
+	}
+	if(vertice.z < min_z){
+		min_z = vertice.z;
+	}
+	if(vertice.x > max_x){
+		max_x = vertice.x;
+	}
+	if(vertice.y > max_y){
+		max_y = vertice.y;
+	}
+	if(vertice.z > max_z){
+		max_z = vertice.z;
+	}
+}
+
+void CModel::FindBoundingBox()
+{
+	topleft = v3(min_x, max_y, max_z);
+	botright = v3(max_x, min_y, min_z);
+} 

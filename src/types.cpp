@@ -77,7 +77,7 @@ SVoxelGrid::SVoxelGrid(v3 Topleft, v3 BotRight)
 
 	float min_axis = min(x, min(y,z));
 
-	voxel_edge = min_axis/4;
+	voxel_edge = min_axis/100;
 
 		//calculate number of voxels per axis
 	num_x = x/voxel_edge;
@@ -102,12 +102,11 @@ void SVoxelGrid::initialize(){
 }
 
 int SVoxelGrid::find(v3 point){
+	if(point.x > botright.x || point.y < botright.y || point.z < botright.z || 
+ 	   point.x < topleft.x  || point.y > topleft.y  || point.z > topleft.z)
+			return -1;
+	
 	v3 subtract = point - topleft;
-
-	if(subtract.x < 0.f || subtract.y > 0.f || subtract.z > 0.f){ // not in the grid
-		return -1;
-	}
-
 	subtract = glm::abs(subtract);
 
 	size_t x = subtract.x/voxel_edge;
@@ -117,3 +116,9 @@ int SVoxelGrid::find(v3 point){
 	return x + y*num_x + z*num_x*num_y;  
 }
 
+void SVoxelGrid::print()
+{
+	for(uint i=0; i < num_x*num_y*num_z; i++)
+		if(voxels[i].value > 0)
+			cerr << voxels[i].value << endl;
+}

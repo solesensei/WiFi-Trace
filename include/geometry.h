@@ -57,10 +57,7 @@ struct SRouter : public Sphere
             float signal_strength = 10000);
 	float power(v3 point);
 	void fill_grid(SVoxelGrid& grid, uint num);
-	void march(SRay& ray,
-               SVoxelGrid& grid, 
-               float start, 
-               float end);
+	void march(SRay& ray, SVoxelGrid& grid, float start, float end);
 };
 
 

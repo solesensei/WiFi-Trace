@@ -13,65 +13,67 @@ using std::endl;
 
 int main(int argc, char** argv)
 {
-    /* Arguments parsing */
-  ArgvParser cmd;
-  cmd.setIntroductoryDescription("WiFi router signal coverage simulation");
-  cmd.setHelpOption("h", "help", "print this help message");
-  cmd.defineOption("config_file", "File with set up configuration", ArgvParser::OptionRequiresValue);
-  cmd.defineOptionAlternative("config_file", "c");
-  int result = cmd.parse(argc, argv);
+      /* Arguments parsing */
+    ArgvParser cmd;
+    cmd.setIntroductoryDescription("WiFi router signal coverage simulation");
+    cmd.setHelpOption("h", "help", "print this help message");
+    cmd.defineOption("config_file", "File with set up configuration", ArgvParser::OptionRequiresValue);
+    cmd.defineOptionAlternative("config_file", "c");
+    int result = cmd.parse(argc, argv);
 
-      // Check for errors or help option
-  if (result){
-      cerr << cmd.parseErrorDescription(result) << endl;
-      return result;
-  }
+        // Check for errors or help option
+    if (result){
+        cerr << cmd.parseErrorDescription(result) << endl;
+        return result;
+    }
 
-    /* Camera and Light creation */
-  SCamera camera(v3(0.f, 0.f, 15.f));
-  SLight light(v3(0.f, 20.f, -10.f), 3000.f);
-    
-    /* Model setting up */
-  CModel model(MODEL_PATH);
-  model.SetUp();
-  SVoxelGrid grid(model.topleft, model.botright);
-  grid.initialize();
-    
-    /* Scene creation */
-  CScene scene(MODEL_PATH);
-  scene.cameras.push_back(camera);
-  scene.lights.push_back(light);
-  for(uint i = 0; i < model.triangles.size(); ++i)
-		scene.figures.push_back(&(model.triangles[i]));
-    
-    /* Ray Tracer render setting up */
-  CTracer tracer(camera, &scene, grid);
+      /* Camera and Light creation */
+    SCamera camera(v3(-2.f,30.f,-2.f),v3(0.f,0.f,-1.f),v3(1.f,0.f,0.f));
+    SLight light(v3(0.f, 20.f, -10.f), 3000.f);
+      
+      /* Model setting up */
+    CModel model(MODEL_PATH);
+    model.SetUp();
+    SVoxelGrid grid(model.topleft, model.botright);
+    grid.initialize();      
+		SRouter router(v3(-6.f,0.f,-6.f),0.2f,v3(1.f,0.f,0.f),10000.f);
+		router.fill_grid(grid,400000);
 
-  int xRes = 1024;  // Default resolution
-  int yRes = 768;
-  
-  if(argc == 3) // There is input file in parameters
-  {
-    FILE* file = fopen(argv[2], "r");
-    if(file)
+      /* Scene creation */
+    CScene scene(model);
+    scene.cameras.push_back(camera);
+    scene.lights.push_back(light);
+    for(uint i = 0; i < model.triangles.size(); ++i)
+        scene.figures.push_back(&(model.triangles[i]));
+    scene.figures.push_back(&router);
+      /* Ray Tracer render setting up */
+    CTracer tracer(camera, &scene, grid);
+
+    int xRes = 1024;  // Default resolution
+    int yRes = 768;
+    
+    if(argc == 3) // There is input file in parameters
     {
-      int xResFromFile = 0;
-      int yResFromFile = 0;
-      if(fscanf(file, "%d %d", &xResFromFile, &yResFromFile) == 2)
+      FILE* file = fopen(argv[2], "r");
+      if(file)
       {
-        xRes = xResFromFile;
-        yRes = yResFromFile;
+        int xResFromFile = 0;
+        int yResFromFile = 0;
+        if(fscanf(file, "%d %d", &xResFromFile, &yResFromFile) == 2)
+        {
+          xRes = xResFromFile;
+          yRes = yResFromFile;
+        }
+        else
+          printf("Invalid config format! Using default parameters.\r\n");
+
+        fclose(file);
       }
       else
-        printf("Invalid config format! Using default parameters.\r\n");
-
-      fclose(file);
+        printf("Invalid config path! Using default parameters.\r\n");
     }
     else
-      printf("Invalid config path! Using default parameters.\r\n");
-  }
-  else
-    printf("No config! Using default parameters.\r\n");
+      printf("No config! Using default parameters.\r\n");
 
-  tracer.RenderImage(xRes, yRes, "result.bmp");
+    tracer.RenderImage(xRes, yRes, "result.bmp");
 }
