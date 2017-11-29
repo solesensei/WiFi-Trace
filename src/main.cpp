@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     }
     int xRes = 1024;  // Default resolution
     int yRes = 768;
-    
+
     if(argc == 3) // There is input file in parameters
     {
       FILE* file = fopen(argv[2], "r");
@@ -52,18 +52,19 @@ int main(int argc, char** argv)
     }
     else
       printf("No config! Using default parameters.\r\n");
-    
+
       /* Camera and Light creation */
-    SCamera front(vec3(-9.f,0.f,0.f), vec3(0.f,1.f,0.f), glm::normalize(vec3(0.f,0.f,1.f)));
-    SCamera top(vec3(0.f,30.f,0.f), vec3(0.f, 0.f, -1.f), vec3(1.f,0.f,0.f));
+
+    SCamera front(vec3(-13.f,3.f,5.f), glm::normalize(vec3(0.5f,1.f,0.f)), glm::normalize(vec3(0.4f,0.f,1.f)));
+    SCamera top(vec3(0.f,20.f,0.f), vec3(0.f, 0.f, -1.f), vec3(1.f,0.f,0.f));
     SLight light(vec3(0.f, 20.f, -10.f), 3000.f);
     SLight light2(vec3(-6.f, 0.f, 1.f), 3000.f);
+      
       /* Model setting up */
     CModel model(MODEL_PATH);
-
     SVoxelGrid grid(model.topleft, model.botright);
     grid.initialize();      
-		SRouter router(vec3(-6.f,0.f,0.f),0.2f,vec3(1.f,0.f,0.f),20000.f);
+    SRouter router(vec3(-6.f,0.f,0.f),0.2f,vec3(1.f,0.f,0.f),20000.f);
 
       /* Scene creation */
     CScene scene(model);
@@ -77,12 +78,13 @@ int main(int argc, char** argv)
     router.fill_grid(scene.figures, grid, 20000);
     scene.figures.push_back(&router);
     scene.lights.push_back(light);
+      
       /* Ray Tracer render setting up */
-    // CTracer tracer(camera, &scene, grid);
     CTracer tracer_front(front, &scene, grid);
     CTracer tracer_top(top, &scene, grid);
 
-    // tracer.RenderImage(xRes, yRes, "result.bmp");
-    // tracer_front.RenderImage(xRes, yRes, "front.bmp");
     tracer_top.RenderImage(xRes, yRes, "top.bmp");
+    tracer_front.RenderImage(xRes, yRes, "front.bmp");
+    
+    return 0;
 }

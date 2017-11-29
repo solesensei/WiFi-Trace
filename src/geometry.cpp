@@ -70,18 +70,17 @@ bool Box::intersect (const SRay& r, float& t0, float& t1) const
 vec3 Box::normalize (const vec3& pHit) const
 {
     vec3 nHit = vec3(0);
-    float eps = 1e-7;
-    if      ( fabs( pHit.x - boxMax.x ) < eps ) //righ
+    if      ( fabs( pHit.x - boxMax.x ) < EPS ) //right
         nHit.x = 1;
-    else if ( fabs( pHit.x - boxMin.x ) < eps ) //left
+    else if ( fabs( pHit.x - boxMin.x ) < EPS ) //left
         nHit.x = -1;
-    else if ( fabs( pHit.y - boxMax.y ) < eps ) //down
+    else if ( fabs( pHit.y - boxMax.y ) < EPS ) //down
         nHit.y = 1;
-    else if ( fabs( pHit.y - boxMin.y ) < eps ) //up
+    else if ( fabs( pHit.y - boxMin.y ) < EPS ) //up
         nHit.y = -1;
-    else if ( fabs( pHit.z - boxMax.z ) < eps ) //back
+    else if ( fabs( pHit.z - boxMax.z ) < EPS ) //back
         nHit.z = -1;
-    else if ( fabs( pHit.z - boxMin.z ) < eps ) //front
+    else if ( fabs( pHit.z - boxMin.z ) < EPS ) //front
         nHit.z = 1;
     return nHit;
 }

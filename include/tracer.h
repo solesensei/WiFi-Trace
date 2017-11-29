@@ -19,6 +19,8 @@ public:
     std::tuple<uint,uint,uint> TraceRay(const SRay& ray);
         // TraceRay processing part, ray marching algorithm using voxel grid   
     vec3 MarchRay (const SRay& ray, vec3 color, float t_closest);
+
+    // vec3 ColorRay ()
   
 public:
     SCamera camera;

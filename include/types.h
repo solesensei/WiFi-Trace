@@ -6,7 +6,7 @@
 #include <tuple>
 #include <assert.h>
 #include <iostream>
-#include <limits>
+// #include <limits>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -17,6 +17,8 @@
 #define PI 3.1415926535897932384626433832795028841971
 #define MARCH_STEPS 2000
 #define REC_STEPS 3
+
+#define EPS 1e-7f
 
 typedef Matrix<std::tuple<uint, uint, uint>> Image;
 

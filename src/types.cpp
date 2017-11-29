@@ -53,14 +53,13 @@ float SVoxel::calc_SDF(vec3 point)
 float SVoxel::calc_depth(SRay& ray, float start, float end)
 {
 	float depth = start;
-    double eps = 1e-7;
 	for(int i=0; i < MARCH_STEPS; ++i){
 		vec3 point = ray.orig + vec3(ray.dir.x*depth, \
                                  	 ray.dir.y*depth, \
                                  	 ray.dir.z*depth);
 			
 		float dist = calc_SDF(point);
-		if(dist < eps)
+		if(dist < EPS)
 			return depth;
 
 		depth += dist;

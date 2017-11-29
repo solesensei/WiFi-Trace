@@ -23,6 +23,8 @@ vec3 CTracer::MarchRay(const SRay& ray, vec3 color, float t_closest){
     int index;
     int previous_index;
     bool first = true;
+    float alpha = 0.05f;
+    vec3 routerColor = vec3(0.0f,0.0f,0.0f);;
     for(int i = 0; i < MARCH_STEPS; ++i){
         vec3 point = ray.orig + vec3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
         depth+=step;
@@ -38,11 +40,11 @@ vec3 CTracer::MarchRay(const SRay& ray, vec3 color, float t_closest){
             }
         }
         if(index>0){
-            vec3 routerColor = vec3(0.f, 1.f, 0.f) * grid.voxels[index].value;
-            routerColor = vec3(0.f, min(255.f, routerColor.y), 0.f);
-            float alpha = 0.06;
-            color = color * (1 - alpha) + routerColor*alpha;
+            float value = grid.voxels[index].value;
+            routerColor += vec3(value/7.f, value/30.f, value/1000.f);
+            routerColor = min(vec3(255.f,200.f,100.f), routerColor);
 
+            color =  color * (1 - alpha) + routerColor*alpha;
         }
         else{ // out of grid
             return color;

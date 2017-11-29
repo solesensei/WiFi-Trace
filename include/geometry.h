@@ -50,7 +50,7 @@ struct STriangle : public Figure
 struct SRouter : public Sphere 
 {
     float sig_strength; // Strength of the signal that router cast
- 	
+
     SRouter(vec3 Position = vec3(0.f, 0.f, 0.f),
             float Radius = 1.f, 
             vec3 Color = vec3(1.f, 0.f, 0.f),

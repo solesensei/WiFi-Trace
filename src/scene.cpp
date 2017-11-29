@@ -148,6 +148,7 @@ void CModel::checkBound(vec3 vertice)
     min_x = vertice.x < min_x ? vertice.x : min_x;
 	min_y = vertice.y < min_y ? vertice.y : min_y;
 	min_z = vertice.z < min_z ? vertice.z : min_z;
+    
     max_x = vertice.x > max_x ? vertice.x : max_x;
 	max_y = vertice.y > max_y ? vertice.y : max_y;
 	max_z = vertice.z > max_z ? vertice.z : max_z;
