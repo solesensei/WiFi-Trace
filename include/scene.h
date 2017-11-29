@@ -9,28 +9,33 @@ class CModel;
 class CScene
 {
 public:
-  std::vector<Figure*> figures;
-  std::vector<SLight> lights;
-  std::vector<SCamera> cameras;
+	std::vector<Figure*> figures;
+	std::vector<SLight> lights;
+	std::vector<SCamera> cameras;
 
-  void LoadModel(const char* path);
-  void SaveImageToFile(const Image &im, const char *path);
-  Image LoadImageFromFile(const char *path);
-  void PlaceRouter();
+		// Load scene model from .obj file
+	void load_model(const char* path);
+		// Save result image to .bmp file	
+	void save_image(const Image &im, const char *path);
+		// Load image from file	
+	Image load_image(const char *path);
+		// Place wifi router at scene
+	void place_router();
+
 public:
-  CModel* model;
+	CModel* model;
 
-  CScene(const char* path_to_model);
-  CScene(CModel& loaded_model);
+	CScene(const char* path_to_model);
+	CScene(CModel& loaded_model);
 };
 
 class CMesh
 {
 public:
-	std::vector<v3> vertices;
-	std::vector<v3> normals;
+	std::vector<vec3> vertices;
+	std::vector<vec3> normals;
 
-	CMesh(std::vector<v3> vertices,std::vector<v3> normals);
+	CMesh(std::vector<vec3> vertices,std::vector<vec3> normals);
 
 };
 
@@ -38,19 +43,25 @@ class CModel
 {
 	float min_x, min_y, min_z;
 	float max_x, max_y, max_z;
-public: 	
+public: 
+		// Import model with assimp  	
  	void load(const char* filename);
- 	void ProcessNode(aiNode *node, const aiScene *scene);
- 	CMesh ProcessMesh(aiMesh *mesh);
- 	void SetUp();
-	void CheckBoundingBox(glm::vec3 vertice);
- 	void FindBoundingBox();
+	 	// Calculate assimp node meshes
+ 	void calc_node(aiNode *node, const aiScene *scene);
+		// Set up model filling meshes and triangles
+ 	void initialize();
+		// Convert assimp mesh to CMesh
+	CMesh getMesh(aiMesh *mesh);
+		// Check box overflows and correct max,min values
+	void checkBound(glm::vec3 vertice);
+		// Initialize topleft and botright with bounds
+ 	void setBound();
  
 public:
 	std::vector<STriangle> triangles;
 	std::vector<CMesh> meshes;
-	v3 topleft;
-	v3 botright;
+	vec3 topleft;
+	vec3 botright;
 
 	CModel(const char* filename);
 };

@@ -7,7 +7,7 @@ using std::endl;
 
 CScene::CScene(const char* path)
 {
-	LoadModel(path);
+	load_model(path);
 }
 
 CScene::CScene(CModel& loaded_model)
@@ -15,13 +15,13 @@ CScene::CScene(CModel& loaded_model)
 	model = &loaded_model;
 }
 
-void CScene::LoadModel(const char* path)
+void CScene::load_model(const char* path)
 {
 	CModel current_model(path);
     model = &current_model;
 }
 
-void CScene::SaveImageToFile(const Image &im, const char *path)
+void CScene::save_image(const Image &im, const char *path)
 {
     BMP out;
     out.SetSize(im.n_cols, im.n_rows);
@@ -41,7 +41,7 @@ void CScene::SaveImageToFile(const Image &im, const char *path)
         throw string("Error writing file ") + string(path);
 }
 
-Image CScene::LoadImageFromFile(const char *path)
+Image CScene::load_image(const char *path)
 {
     BMP in;
 
@@ -60,12 +60,12 @@ Image CScene::LoadImageFromFile(const char *path)
     return res;
 }
 
-void CScene::PlaceRouter()
+void CScene::place_router()
 {
-	SRouter router(v3(0.f, 0.f, 0.f), 200.f, v3(1.f, 0.f, 0.f));
+	SRouter router(vec3(0.f, 0.f, 0.f), 200.f, vec3(1.f, 0.f, 0.f));
 }
 
-CMesh::CMesh(std::vector<v3> Vertices, std::vector<v3> Normals)
+CMesh::CMesh(std::vector<vec3> Vertices, std::vector<vec3> Normals)
 {
     vertices = Vertices;
 	normals = Normals;
@@ -74,12 +74,8 @@ CMesh::CMesh(std::vector<v3> Vertices, std::vector<v3> Normals)
 CModel::CModel(const char* filename)
 {
     float max = std::numeric_limits<float>::max();
- 	min_x = max;
- 	min_y = max;
- 	min_z = max;
- 	max_x = -max;
- 	max_y = -max;
- 	max_z = -max;
+ 	min_x = min_y = min_z = max;
+ 	max_x = max_y = max_z = -max;
     load(filename);
 }
 
@@ -90,34 +86,34 @@ void CModel::load(const char* filename)
 	
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
-        cerr << "Assimp load error: " << import.GetErrorString() << endl;
+        cerr << "Assimp import error: " << import.GetErrorString() << endl;
         return;
     }
 
-    ProcessNode(scene->mRootNode, scene);
-    SetUp();
-    FindBoundingBox();
+    calc_node(scene->mRootNode, scene);
+    initialize();
+    setBound();
 }
 
-void CModel::ProcessNode(aiNode *node, const aiScene *scene)
+void CModel::calc_node(aiNode *node, const aiScene *scene)
 {
     for(uint i = 0; i < node->mNumMeshes; ++i){
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
-        meshes.push_back(ProcessMesh(mesh));			
+        meshes.push_back(getMesh(mesh));			
     }
-    // then do the same for each of its children
+        // same for children
     for(uint i = 0; i < node->mNumChildren; ++i){
-        ProcessNode(node->mChildren[i], scene);
+        calc_node(node->mChildren[i], scene);
     }
 }  
 
-CMesh CModel::ProcessMesh(aiMesh *mesh)
+CMesh CModel::getMesh(aiMesh *mesh)
 {
-    std::vector<v3> vertices;
-    std::vector<v3> normals;
+    std::vector<vec3> vertices;
+    std::vector<vec3> normals;
 
     for(uint i = 0; i < mesh->mNumVertices; ++i){
-    	v3 vector;
+    	vec3 vector;
     	vector.x = mesh->mVertices[i].x;
     	vector.y = mesh->mVertices[i].y;
     	vector.z = mesh->mVertices[i].z;
@@ -131,45 +127,34 @@ CMesh CModel::ProcessMesh(aiMesh *mesh)
     return CMesh(vertices, normals);
 }  
 
-void CModel::SetUp()
+void CModel::initialize()
 {
 	for(size_t i = 0; i < meshes.size(); ++i){
-		for(size_t j =0; j < meshes[i].vertices.size(); j+=3){
-			v3 a = meshes[i].vertices[j];
-			v3 b = meshes[i].vertices[j+1];
-			v3 c = meshes[i].vertices[j+2];
-            CheckBoundingBox(a);
-			CheckBoundingBox(b);
-			CheckBoundingBox(c);
-			STriangle temp(a,b,c,meshes[i].normals[j]);
+		for(size_t j = 0; j < meshes[i].vertices.size(); j+=3){
+			vec3 a = meshes[i].vertices[j];
+			vec3 b = meshes[i].vertices[j+1];
+			vec3 c = meshes[i].vertices[j+2];
+            checkBound(a);
+			checkBound(b);
+			checkBound(c);
+			STriangle temp(a, b, c, meshes[i].normals[j]);
 			triangles.push_back(temp);
 		}
 	}
 }
 
-void CModel::CheckBoundingBox(v3 vertice){
-	if(vertice.x < min_x){
-		min_x = vertice.x;
-	}
-	if(vertice.y < min_y){
-		min_y = vertice.y;
-	}
-	if(vertice.z < min_z){
-		min_z = vertice.z;
-	}
-	if(vertice.x > max_x){
-		max_x = vertice.x;
-	}
-	if(vertice.y > max_y){
-		max_y = vertice.y;
-	}
-	if(vertice.z > max_z){
-		max_z = vertice.z;
-	}
+void CModel::checkBound(vec3 vertice)
+{
+    min_x = vertice.x < min_x ? vertice.x : min_x;
+	min_y = vertice.y < min_y ? vertice.y : min_y;
+	min_z = vertice.z < min_z ? vertice.z : min_z;
+    max_x = vertice.x > max_x ? vertice.x : max_x;
+	max_y = vertice.y > max_y ? vertice.y : max_y;
+	max_z = vertice.z > max_z ? vertice.z : max_z;
 }
 
-void CModel::FindBoundingBox()
+void CModel::setBound()
 {
-	topleft = v3(min_x, max_y, max_z);
-	botright = v3(max_x, min_y, min_z);
+	topleft = vec3(min_x, max_y, max_z);
+	botright = vec3(max_x, min_y, min_z);
 } 

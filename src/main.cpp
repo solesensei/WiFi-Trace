@@ -54,19 +54,16 @@ int main(int argc, char** argv)
       printf("No config! Using default parameters.\r\n");
     
       /* Camera and Light creation */
-    // SCamera camera(v3(-2.f,30.f,-2.f),v3(0.f,0.f,-1.f),v3(1.f,0.f,0.f));
-    SCamera front(v3(-9.f,0.f,0.f), v3(0.f,1.f,0.f), glm::normalize(v3(0.f,0.f,1.f)));
-    SCamera top(v3(0.f,30.f,0.f), v3(0.f,0.f,-1.f), v3(1.f,0.f,0.f));
-    SLight light(v3(0.f, 20.f, -10.f), 3000.f);
-    SLight light2(v3(-6.f, 0.f, 1.f), 3000.f);
+    SCamera front(vec3(-9.f,0.f,0.f), vec3(0.f,1.f,0.f), glm::normalize(vec3(0.f,0.f,1.f)));
+    SCamera top(vec3(0.f,30.f,0.f), vec3(0.f, 0.f, -1.f), vec3(1.f,0.f,0.f));
+    SLight light(vec3(0.f, 20.f, -10.f), 3000.f);
+    SLight light2(vec3(-6.f, 0.f, 1.f), 3000.f);
       /* Model setting up */
     CModel model(MODEL_PATH);
 
-    // model.SetUp();
     SVoxelGrid grid(model.topleft, model.botright);
     grid.initialize();      
-		SRouter router(v3(-6.f,0.f,0.f),0.2f,v3(1.f,0.f,0.f),20000.f);
-    // router.fill_grid(grid,400000);
+		SRouter router(vec3(-6.f,0.f,0.f),0.2f,vec3(1.f,0.f,0.f),20000.f);
 
       /* Scene creation */
     CScene scene(model);

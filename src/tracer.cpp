@@ -3,12 +3,12 @@
 using namespace glm;
 using std::string;
 
-SRay CTracer::MakeRay(float x, float y, float width, float height)
+SRay CTracer::MakeRay(float x, float y)
 {
-    return SRay::build_ray(x, y, width, height, camera);
+    return SRay::build_ray(x, y, camera);
 }
 
-std::tuple<uint,uint,uint> CTracer::vec3_to_color(v3 vector)
+std::tuple<uint,uint,uint> CTracer::vec3_to_color(vec3 vector)
 {
     uint x = uint(vector.x);
     uint y = uint(vector.y);
@@ -16,15 +16,15 @@ std::tuple<uint,uint,uint> CTracer::vec3_to_color(v3 vector)
     return std::make_tuple(x, y, z);
 }
 
-v3 CTracer::MarchRay(const SRay& ray, v3 color, float t_closest){
+vec3 CTracer::MarchRay(const SRay& ray, vec3 color, float t_closest){
 
     float depth = 0.0f;
-    float step = 0.005; // 1cm
+    float step = 0.005;
     int index;
     int previous_index;
     bool first = true;
-    for(int i=0; i < 100000; i++){
-        v3 point = ray.orig + v3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
+    for(int i = 0; i < MARCH_STEPS; ++i){
+        vec3 point = ray.orig + vec3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
         depth+=step;
         if(first){
             index = grid.find(point);
@@ -38,14 +38,13 @@ v3 CTracer::MarchRay(const SRay& ray, v3 color, float t_closest){
             }
         }
         if(index>0){
-            v3 wificolor = v3(0.f, 1.f, 0.f)*grid.voxels[index].value;
-            wificolor = v3(0.f, glm::min(255.f,wificolor.y), 0.f);
-            float alpha =0.06;
-            color = color*(1-alpha) + wificolor*alpha;
+            vec3 routerColor = vec3(0.f, 1.f, 0.f) * grid.voxels[index].value;
+            routerColor = vec3(0.f, min(255.f, routerColor.y), 0.f);
+            float alpha = 0.06;
+            color = color * (1 - alpha) + routerColor*alpha;
 
         }
-        else{
-            // out of grid
+        else{ // out of grid
             return color;
         }
     }
@@ -59,7 +58,7 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
     float t0, t1, t_closest = std::numeric_limits<float>::max();
     int i_closest; // index of the closest intersect object
     bool isInter = false;
-    v3 res_color = v3(0.f, 0.f, 0.f);
+    vec3 res_color = vec3(0.f, 0.f, 0.f);
     for(size_t i = 0; i < pScene->figures.size(); ++i){
             //check intersection
         if(pScene->figures[i]->intersect(ray, t0, t1))
@@ -76,16 +75,15 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
     }
     if(!isInter) return vec3_to_color(res_color); // no intersection, returns black
 
-    v3 pHit = ray.orig + ray.dir*t_closest; // hit point 
-    v3 nHit; // normal at hit point
-    pScene->figures[i_closest]->normalize(pHit, nHit);
+    vec3 pHit = ray.orig + ray.dir*t_closest; // hit point 
+    vec3 nHit = pScene->figures[i_closest]->normalize(pHit); // normal at hit point
     nHit = glm::dot(ray.dir, nHit) > 0 ? -nHit : nHit; // reverse normal if its inside 
     pHit = pHit + nHit*1.e-4f;
    
     SRay shadow_ray;
     for(uint k = 0; k < pScene->lights.size(); ++k){
             // processing shadow parts
-        v3 lightdir = pScene->lights[k].pos - pHit;
+        vec3 lightdir = pScene->lights[k].pos - pHit;
         lightdir = glm::normalize(lightdir);
         // shadow_ray = SRay (pHit, lightdir); 
         // bool isShadow = false;
@@ -97,11 +95,11 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
         // if( !isShadow ){
             float dif = glm::dot(lightdir, nHit);
             if(dif < 0.f) 
-                return vec3_to_color(v3(0,0,0));
+                return vec3_to_color(vec3(0,0,0));
             SRay eye(pHit, ray.orig - pHit); 
             res_color = MarchRay(eye, pScene->figures[i_closest]->color * dif* 255.f, t_closest);
-            // v3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
-            //                               v3(0.05f, 0.05f, 0.05f), // specular reflection constant
+            // vec3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
+            //                               vec3(0.05f, 0.05f, 0.05f), // specular reflection constant
             //                               5.f,  // shininess constant for this material
             //                               nHit, 
             //                               pHit,
@@ -116,12 +114,14 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
 void CTracer::RenderImage(int width, int height, const char* name)
 {
     Image res_image(height, width);
+    camera.width = float(width);
+    camera.height = float(height);
     for(uint i = 0; i < res_image.n_rows; ++i)
 		for(uint j = 0; j < res_image.n_cols; ++j){	
-			SRay ray = MakeRay(j, i, width, height);
+			SRay ray = MakeRay(j, i);
 			res_image(i, j) = TraceRay(ray);
 		}
     
     std::string path = string("../../img/") + name;
-    pScene->SaveImageToFile(res_image, path.c_str());
+    pScene->save_image(res_image, path.c_str());
 }

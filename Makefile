@@ -8,7 +8,7 @@ CXXFLAGS += -Wformat-security -Wignored-qualifiers -Winit-self \
 		-Wmissing-field-initializers -Wctor-dtor-privacy \
 		-Wnon-virtual-dtor -Wstrict-null-sentinel  \
 		-Woverloaded-virtual -Wsign-promo -Wextra -pedantic \
-		-Wold-style-cast \
+		# -Wold-style-cast \
 		#  -Werror
 
 # Directories with source code

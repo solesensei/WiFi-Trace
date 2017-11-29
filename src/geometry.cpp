@@ -7,7 +7,7 @@ using std::sqrt;
 using std::fabs;
 
 
-Box::Box(const v3 vmin, const v3 vmax, const v3 col, const float ref, const float trans)
+Box::Box(const vec3 vmin, const vec3 vmax, const vec3 col, const float ref, const float trans)
 {
     boxMin = vmin;
     boxMax = vmax;
@@ -16,9 +16,9 @@ Box::Box(const v3 vmin, const v3 vmax, const v3 col, const float ref, const floa
     transparent = trans;
 }
 
-Sphere::Sphere (v3 cen,
+Sphere::Sphere (vec3 cen,
                 const float r,
-                const v3 col, 
+                const vec3 col, 
                 const float ref, 
                 const float trans)
 {
@@ -50,7 +50,7 @@ bool QuadEq(const float &a, const float &b, const float &c, float &x0, float &x1
 
 bool Box::intersect (const SRay& r, float& t0, float& t1) const 
 {
-    v3 inv_dir = 1.f/r.dir;
+    vec3 inv_dir = 1.f/r.dir;
     float lo = inv_dir.x * (boxMin.x - r.orig.x);
     float hi = inv_dir.x * (boxMax.x - r.orig.x);
     float lo1 = inv_dir.y * (boxMin.y - r.orig.y);
@@ -67,9 +67,9 @@ bool Box::intersect (const SRay& r, float& t0, float& t1) const
     return (t0 <= t1) && (t1 > 0);
 }
 
-void Box::normalize (const v3& pHit, v3& nHit) const
+vec3 Box::normalize (const vec3& pHit) const
 {
-    nHit = v3(0);
+    vec3 nHit = vec3(0);
     float eps = 1e-7;
     if      ( fabs( pHit.x - boxMax.x ) < eps ) //righ
         nHit.x = 1;
@@ -83,11 +83,12 @@ void Box::normalize (const v3& pHit, v3& nHit) const
         nHit.z = -1;
     else if ( fabs( pHit.z - boxMin.z ) < eps ) //front
         nHit.z = 1;
+    return nHit;
 }
 
 bool Sphere::intersect (const SRay& r, float& t0, float& t1) const 
 {   
-    v3 v = center_pos - r.orig;
+    vec3 v = center_pos - r.orig;
     float tca = glm::dot(v, r.dir);
     if (tca < 0) return false;
     
@@ -99,13 +100,13 @@ bool Sphere::intersect (const SRay& r, float& t0, float& t1) const
     t1 = tca + thc;
     return true;
 }
-void Sphere::normalize (const v3& pHit, v3& nHit) const
+vec3 Sphere::normalize (const vec3& pHit) const
 {
-    nHit = pHit - center_pos;
-    nHit = glm::normalize(nHit);
+    vec3 nHit = pHit - center_pos;
+    return glm::normalize(nHit);
 }
 
-STriangle::STriangle(v3 a, v3 b, v3 c, v3 norm, v3 col)
+STriangle::STriangle(vec3 a, vec3 b, vec3 c, vec3 norm, vec3 col)
 {
 	A = a;
 	B = b; 
@@ -115,20 +116,20 @@ STriangle::STriangle(v3 a, v3 b, v3 c, v3 norm, v3 col)
 }
 bool STriangle::intersect(const SRay& ray, float &t0, float &t1) const
 {
-	v3 AB = B - A;
-	v3 AC = C - A;
-	v3 pvec = glm::cross(ray.dir, AC);
+	vec3 AB = B - A;
+	vec3 AC = C - A;
+	vec3 pvec = glm::cross(ray.dir, AC);
 	float scalar = glm::dot(AB, pvec);
 
 	if (fabs(scalar) < 1e-4f) // ray parallel to triangle
         return false;
 
-	v3 tvec = ray.orig - A;
+	vec3 tvec = ray.orig - A;
 	float u = glm::dot(tvec,pvec) / scalar;
     if (u < 0 || u > 1) 
         return false;
 
-	v3 qvec = glm::cross(tvec, AB);
+	vec3 qvec = glm::cross(tvec, AB);
 	float v = glm::dot(ray.dir, qvec) / scalar;
 	if (v < 0 || u + v > 1) 
         return false;
@@ -138,15 +139,14 @@ bool STriangle::intersect(const SRay& ray, float &t0, float &t1) const
 	return true; 
 } 
 
-void STriangle::normalize(const v3& pHit, v3& nHit) const
+vec3 STriangle::normalize(const vec3& pHit) const
 {
-//	 nHit = glm::normalize(pHit);
-	 nHit = glm::normalize(normal);
+	 return glm::normalize(normal);
 }
 
-SRouter::SRouter(v3 Position,
+SRouter::SRouter(vec3 Position,
                  float Radius, 
-                 v3 Color,
+                 vec3 Color,
                  float signal_strength):
     Sphere(Position, Radius, Color)
 {
@@ -155,19 +155,20 @@ SRouter::SRouter(v3 Position,
 
 void SRouter::fill_grid(std::vector<Figure*> figures, SVoxelGrid& grid, uint num)
 {
-	for(uint i=0; i < num ; i++){
-		//construct random ray
-		float x = -1.f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
-		float y = -1.f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
-		float z = -1.f + static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(2.0f));
+		// build random ray
+	for(uint i = 0; i < num ; ++i)
+    {
+        float x = rand() / (RAND_MAX/(2.f)) - 1;
+        float y = rand() / (RAND_MAX/(2.f)) - 1;
+        float z = rand() / (RAND_MAX/(2.f)) - 1;
 
-        v3 direction = glm::normalize(v3(x,y,z));
-		SRay random_ray = SRay(center_pos, direction, sig_strength);
+        vec3 dir = glm::normalize(vec3(x,y,z));
+		SRay random_ray = SRay(center_pos, dir, sig_strength);
 		march(random_ray, figures, grid, 0);
 	}
 }
 
-float SRouter::power(v3 point)
+float SRouter::calc_strength(vec3 point)
 {
 	float distance = glm::length(point - center_pos);
 	if(distance < radius)
@@ -176,7 +177,8 @@ float SRouter::power(v3 point)
 		return std::min(sig_strength, sig_strength/(distance*distance));
 }
 
-void SRouter::march(SRay& ray, std::vector<Figure*> figures, SVoxelGrid& grid, int r_step){
+void SRouter::march(SRay& ray, std::vector<Figure*> figures, SVoxelGrid& grid, int r_step)
+{
 	float depth = 0.f;
 	float d_step = 0.02f;
     float end = 100.f;
@@ -184,30 +186,29 @@ void SRouter::march(SRay& ray, std::vector<Figure*> figures, SVoxelGrid& grid, i
     size_t index;
     if (check_intersect(ray, figures, t_close, index)){
         end = t_close;
-        if(r_step < 2){
-            v3 pHit = ray.orig + ray.dir*t_close;
-            v3 nHit;
-            figures[index]->normalize(pHit,nHit);
+        if(r_step < REC_STEPS){
+            vec3 pHit = ray.orig + ray.dir*t_close;
+            vec3 nHit = figures[index]->normalize(pHit);
             pHit += nHit*0.01f;
-            figures[index]->normalize(pHit,nHit);            
-            v3 refl_dir = glm::normalize(glm::reflect(ray.dir, nHit));
-            float s = power(pHit);
+            nHit = figures[index]->normalize(pHit);        
+            vec3 refl_dir = glm::normalize(glm::reflect(ray.dir, nHit));
+            float s = calc_strength(pHit);
             SRay refl_ray(pHit, refl_dir, s);
             march(refl_ray, figures, grid, r_step+1);
  	    }
     }
-	for(int i = 0; i < STEPS; ++i){
-		v3 point = ray.orig + v3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
+	for(int i = 0; i < MARCH_STEPS; ++i){
+		vec3 point = ray.orig + vec3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
 		depth += d_step;
-        ray.strength = power(point);
+        ray.strength = calc_strength(point);
 		if(depth > end){
 			return;
 		}
-
-		int index = grid.find(point);
-		if(index > 0){
-			if(grid.voxels[index].value < ray.strength)
-			   grid.voxels[index].value = ray.strength;
+            // set grid voxel with signal strength
+		int idx = grid.find(point);
+		if(idx > 0){
+			if(grid.voxels[idx].value < ray.strength)
+			   grid.voxels[idx].value = ray.strength;
 		}
 		else{
 			// out of grid

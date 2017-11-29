@@ -11,7 +11,7 @@ Visualization of WiFi coverage with ray tracing algorithm
 
 ### Launch script 
 
-        bash test.sh # build and run 
+        bash test.sh # build and run with config_file
    
 ---
 
@@ -20,7 +20,11 @@ Visualization of WiFi coverage with ray tracing algorithm
 
 [Ray Tracing by Frolov](http://ray-tracing.ru/)
 
+[Ray Marching algorithm](http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#the-raymarching-algorithm)
+
 ## Used libraries 
 [EasyBMP](http://easybmp.sourceforge.net/)
 
 [glm](https://github.com/g-truc/glm)
+
+[assimp](https://github.com/assimp/assimp)
