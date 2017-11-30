@@ -80,7 +80,8 @@ struct SLight
 
 struct SPhong
 {
-	static vec3 phong_calc(const vec3& diff_const, // diffuse reflection constant
+	static vec3 phong_calc(const vec3& ambi_const, // ambient reflection constant
+						   const vec3& diff_const, // diffuse reflection constant
 				           const vec3& spec_const, // specular reflection constant
 				           float alpha, // shininess constant for this material
 				           const vec3& normal, // normal at hit point on the surface
@@ -109,11 +110,11 @@ struct SPhong
 
             // return diffuse 
 		if(dot_reflect_view < 0.f) // no reflections 
-			return color * diff_const * dot_light_normal;
+			return color * ( ambi_const + diff_const * dot_light_normal );
 
 		    // return ambient + diffuse + specular
 		float specular = pow(dot_reflect_view, alpha);
-		return color*(diff_const*dot_light_normal + spec_const*specular);
+		return color * ( ambi_const + diff_const*dot_light_normal + spec_const*specular );
 	}
 };
 

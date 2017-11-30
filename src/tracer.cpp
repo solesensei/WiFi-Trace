@@ -103,7 +103,8 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
             if(dif < 0.f) 
                 continue;
             SRay eye(pHit, ray.orig - pHit); 
-            vec3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
+            vec3 phong_color = SPhong::phong_calc(vec3(0.1f, 0.1f, 0.1f), // ambient reflection constant
+                                                  pScene->figures[i_closest]->color*0.7f, // diffuse reflection constant
                                                   vec3(0.1f, 0.1f, 0.1f), // specular reflection constant
                                                   100.f,  // shininess constant for this material
                                                   nHit, 
@@ -123,8 +124,10 @@ void CTracer::RenderImage(int width, int height, const char* name)
     Image res_image(height, width);
     camera.width = float(width);
     camera.height = float(height);
-    for(uint i = 0; i < res_image.n_rows; ++i)
-		for(uint j = 0; j < res_image.n_cols; ++j){	
+    uint i,j;
+    #pragma omp parallel for private(i,j)
+    for(i = 0; i < res_image.n_rows; ++i)
+		for(j = 0; j < res_image.n_cols; ++j){	
 			SRay ray = MakeRay(j, i);
 			res_image(i, j) = TraceRay(ray);
 		}

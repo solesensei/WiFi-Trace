@@ -64,12 +64,10 @@ int main(int argc, char** argv)
     CModel model(MODEL_PATH);
     SVoxelGrid grid(model.topleft, model.botright);
     grid.initialize();      
-    SRouter router(vec3(-6.f,0.f,0.f),0.2f,vec3(1.f,0.f,0.f),20000.f);
+    SRouter router(vec3(-6.f,0.f,0.f),0.2f,vec3(1.f,0.f,0.f),10000.f);
 
-      /* Scene creation */
+      /* Scene initialize */
     CScene scene(model);
-    // scene.cameras.push_back(front);
-    // scene.cameras.push_back(top);
     for(uint i = 0; i < model.triangles.size(); ++i)
         scene.figures.push_back(&(model.triangles[i]));
 
@@ -79,6 +77,8 @@ int main(int argc, char** argv)
     scene.figures.push_back(&router);
     scene.lights.push_back(light);
     scene.lights.push_back(light2);
+    scene.cameras.push_back(front);
+    scene.cameras.push_back(top);
       
       /* Ray Tracer render setting up */
     CTracer tracer_front(front, &scene, grid);

@@ -7,7 +7,7 @@ CXXFLAGS += -Wformat-security -Wignored-qualifiers -Winit-self \
 		-Wtype-limits -Wempty-body -Wlogical-op \
 		-Wmissing-field-initializers -Wctor-dtor-privacy \
 		-Wnon-virtual-dtor -Wstrict-null-sentinel  \
-		-Woverloaded-virtual -Wsign-promo -Wextra -pedantic \
+		-Woverloaded-virtual -Wsign-promo -Wextra -pedantic -fopenmp \
 		# -Wold-style-cast \
 		#  -Werror
 

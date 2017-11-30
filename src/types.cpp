@@ -52,7 +52,7 @@ float SVoxel::calc_SDF(vec3 point)
 float SVoxel::calc_depth(SRay& ray, float start, float end)
 {
 	float depth = start;
-	for(int i=0; i < MARCH_STEPS; ++i){
+	for(int i = 0; i < MARCH_STEPS; ++i){
 		vec3 point = ray.orig + vec3(ray.dir.x*depth, \
                                  	 ray.dir.y*depth, \
                                  	 ray.dir.z*depth);
@@ -113,8 +113,6 @@ int SVoxelGrid::find(vec3 point){
 
 void SVoxelGrid::filter()
 {
-	vec3 zero = vec3(0.f,0.f,0.f);
-	vec3 size = vec3(num_x, num_y, num_z);
 	for(ssize_t k = 1; k < num_z-1; ++k){
  		for(ssize_t j = 1; j < num_y-1; ++j){
  			for(ssize_t i = 1; i < num_x-1; ++i)
@@ -141,7 +139,8 @@ float SVoxelGrid::neighbourBOX(const vec3& v)
 
 void SVoxelGrid::print()
 {
-	for(uint i=0; i < num_x*num_y*num_z; ++i)
+	uint size = num_x*num_y*num_z;
+	for(uint i = 0; i < size; ++i)
 		if(voxels[i].value > 0)
 			cerr << voxels[i].value << endl;
 }
