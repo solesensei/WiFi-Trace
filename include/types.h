@@ -28,6 +28,11 @@ typedef glm::uvec2 uvec2;
 typedef glm::uvec3 uvec3;
 typedef glm::mat4 mat4;
 
+// ============
+using std::cerr;
+using std::endl;
+// ============
+
 struct SCamera
 {
 	vec3 pos;  // Camera position and orientation
@@ -65,18 +70,19 @@ struct SLight
     vec3 intens; // Light intensity
     SLight(const vec3& p, const float i = 1): pos(p), intens(vec3(i,i,i))
 	{}
+
 };
 
 struct SPhong
 {
 	static vec3 phong_calc(const vec3& diff_const, // diffuse reflection constant
-				         const vec3& spec_const, // specular reflection constant
-				         float alpha, // shininess constant for this material
-				         const vec3& normal, // normal at hit point on the surface
-				         const vec3& hit,
-				         const SCamera& cam,
-				         SLight light
-				         ){
+				           const vec3& spec_const, // specular reflection constant
+				           float alpha, // shininess constant for this material
+				           const vec3& normal, // normal at hit point on the surface
+				           const vec3& hit,
+				           const SCamera& cam,
+				           SLight light
+				           ){
             // direction from the hit point to toward light source
 		vec3 dir_light = glm::normalize(light.pos - hit);
             // direction pointing towards the viewer
@@ -88,13 +94,11 @@ struct SPhong
         
         float dot_light_normal = glm::dot(dir_light, normal); 
 		float dot_reflect_view = glm::dot(dir_reflect, dir_view); 
-
-            // calculate light intesity in hit point
+		
         float radius = glm::distance(light.pos, hit);
-        float area = 4*PI*radius*radius;
+        float area = 4*PI*radius*radius*1e-5f;
 	    vec3 color = light.intens / area;
-		color *= 1e+6f;
-            // return black color
+
 		if(dot_light_normal < 0.f) // no light
 			return vec3(0.f, 0.f, 0.f);
 
@@ -104,7 +108,7 @@ struct SPhong
 
 		    // return ambient + diffuse + specular
 		float specular = pow(dot_reflect_view, alpha);
-		return color * ( diff_const*dot_light_normal + spec_const*specular );
+		return color*(diff_const*dot_light_normal + spec_const*specular);
 	}
 };
 

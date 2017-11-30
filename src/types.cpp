@@ -28,7 +28,6 @@ SRay SRay::build_ray(float x, float y, const SCamera& cam)
     return SRay( cam.pos, glm::normalize(ray_dir) );
 }
 
-
 SVoxel::SVoxel():
 	pos (vec3(0.f, 0.f, 0.f)),
 	side (0.5f),

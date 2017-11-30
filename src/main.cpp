@@ -27,8 +27,8 @@ int main(int argc, char** argv)
         cerr << cmd.parseErrorDescription(result) << endl;
         return result;
     }
-    int xRes = 1024;  // Default resolution
-    int yRes = 768;
+    int xRes = 800;  // Default resolution
+    int yRes = 600;
 
     if(argc == 3) // There is input file in parameters
     {
@@ -57,8 +57,8 @@ int main(int argc, char** argv)
 
     SCamera front(vec3(-13.f,3.f,5.f), glm::normalize(vec3(0.5f,1.f,0.f)), glm::normalize(vec3(0.4f,0.f,1.f)));
     SCamera top(vec3(0.f,20.f,0.f), vec3(0.f, 0.f, -1.f), vec3(1.f,0.f,0.f));
-    SLight light(vec3(0.f, 20.f, -10.f), 3000.f);
-    SLight light2(vec3(-6.f, 0.f, 1.f), 3000.f);
+    SLight light(vec3(-6.f, 10.f, -10.f), 10.f);
+    // SLight light2(vec3(-6.f, 0.f, 1.f), 3000.f);
       
       /* Model setting up */
     CModel model(MODEL_PATH);

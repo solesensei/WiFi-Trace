@@ -80,35 +80,40 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
     vec3 pHit = ray.orig + ray.dir*t_closest; // hit point 
     vec3 nHit = pScene->figures[i_closest]->normalize(pHit); // normal at hit point
     nHit = glm::dot(ray.dir, nHit) > 0 ? -nHit : nHit; // reverse normal if its inside 
-    pHit = pHit + nHit*1.e-4f;
+    pHit = pHit + nHit*1e-2f;
    
     SRay shadow_ray;
     for(uint k = 0; k < pScene->lights.size(); ++k){
             // processing shadow parts
         vec3 lightdir = pScene->lights[k].pos - pHit;
         lightdir = glm::normalize(lightdir);
-        // shadow_ray = SRay (pHit, lightdir); 
-        // bool isShadow = false;
-        // for(uint i = 0; i < pScene->figures.size(); ++i)
-            // if ( pScene->figures[i]->intersect(shadow_ray, t0, t1)){
-                    // isShadow = true; 
-                    // break;
-            // }
-        // if( !isShadow ){
+        shadow_ray = SRay (pHit, lightdir); 
+        bool isShadow = false;
+        for(uint i = 0; i < pScene->figures.size(); ++i)
+            if ( pScene->figures[i]->intersect(shadow_ray, t0, t1))
+            {
+                if(t0 > 0)
+                {
+                    isShadow = true; 
+                    break;
+                }
+            }
+        if( !isShadow ){
             float dif = glm::dot(lightdir, nHit);
             if(dif < 0.f) 
-                return vec3_to_color(vec3(0,0,0));
+                return vec3_to_color(res_color);
             SRay eye(pHit, ray.orig - pHit); 
-            res_color = MarchRay(eye, pScene->figures[i_closest]->color * dif* 255.f, t_closest);
-            // vec3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
-            //                               vec3(0.05f, 0.05f, 0.05f), // specular reflection constant
-            //                               5.f,  // shininess constant for this material
-            //                               nHit, 
-            //                               pHit,
-            //                               camera,
-            //                               pScene->lights[k]);
-            // res_color += phong_color;
-        // }
+            vec3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
+                                                  vec3(0.1f, 0.1f, 0.1f), // specular reflection constant
+                                                  100.f,  // shininess constant for this material
+                                                  nHit, 
+                                                  pHit,
+                                                  camera,
+                                                  pScene->lights[k]);
+            phong_color = min(vec3(255.f, 255.f, 255.f), phong_color);
+            res_color += MarchRay(eye, phong_color, t_closest);
+        }
+        break;
     }
     return vec3_to_color(res_color);
 }
