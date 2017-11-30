@@ -184,22 +184,40 @@ void SRouter::march(SRay& ray, std::vector<Figure*> figures, SVoxelGrid& grid, i
     float t_close = 100.f;
     size_t index;
     if (check_intersect(ray, figures, t_close, index)){
+        
         end = t_close;
-        if(r_step < REC_STEPS){
-            vec3 pHit = ray.orig + ray.dir*t_close;
-            vec3 nHit = figures[index]->normalize(pHit);
-            pHit += nHit*0.01f;
-            nHit = figures[index]->normalize(pHit);        
-            vec3 refl_dir = glm::normalize(glm::reflect(ray.dir, nHit));
-            float s = calc_strength(pHit);
-            SRay refl_ray(pHit, refl_dir, s);
-            march(refl_ray, figures, grid, r_step+1);
- 	    }
+        vec3 pHit = ray.orig + ray.dir*t_close;
+        float refl_chance =  float(rand()) / float(RAND_MAX);
+        if (refl_chance > 0.5f){ // reflection
+            if(r_step < REC_STEPS){
+                vec3 nHit = figures[index]->normalize(pHit);
+                pHit += nHit*0.01f;
+                nHit = figures[index]->normalize(pHit);        
+                vec3 refl_dir = glm::normalize(glm::reflect(ray.dir, nHit));
+                float s = calc_strength(pHit);
+                SRay refl_ray(pHit, refl_dir, s);
+                march(refl_ray, figures, grid, r_step+1);
+            }
+        }else{ // absorption
+            vec3 nHit =figures[index]->normalize(pHit);
+            pHit -= nHit*0.01f;
+            float s = calc_strength(pHit) - ray.refl*10.f;
+            SRay tray(pHit, ray.dir, s);
+            float t_near = 100.f;    
+            size_t idx;
+            if(check_intersect(tray, figures, t_near, idx)){
+                vec3 p = tray.orig + tray.dir*t_near;
+                vec3 n = figures[idx]->normalize(p);
+                p += n*0.01f;
+                SRay no_refl_ray(p, tray.dir, tray.strength, tray.refl+1);
+                march(no_refl_ray, figures, grid, r_step); 
+            }
+        }
     }
 	for(int i = 0; i < MARCH_STEPS; ++i){
 		vec3 point = ray.orig + vec3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
 		depth += d_step;
-        ray.strength = calc_strength(point);
+        ray.strength = calc_strength(point) - ray.refl*10.f;
 		if(depth > end){
 			return;
 		}

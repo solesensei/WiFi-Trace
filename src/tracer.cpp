@@ -101,7 +101,7 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
         if( !isShadow ){
             float dif = glm::dot(lightdir, nHit);
             if(dif < 0.f) 
-                return vec3_to_color(res_color);
+                continue;
             SRay eye(pHit, ray.orig - pHit); 
             vec3 phong_color = SPhong::phong_calc(pScene->figures[i_closest]->color, // diffuse reflection constant
                                                   vec3(0.1f, 0.1f, 0.1f), // specular reflection constant
@@ -113,7 +113,6 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
             phong_color = min(vec3(255.f, 255.f, 255.f), phong_color);
             res_color += MarchRay(eye, phong_color, t_closest);
         }
-        break;
     }
     return vec3_to_color(res_color);
 }

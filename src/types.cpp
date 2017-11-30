@@ -111,6 +111,38 @@ int SVoxelGrid::find(vec3 point){
 	return x + y*num_x + z*num_x*num_y;  
 }
 
+void SVoxelGrid::filter()
+{
+	vec3 zero = vec3(0.f,0.f,0.f);
+	vec3 size = vec3(num_x, num_y, num_z);
+	for(ssize_t k = 1; k < num_z-1; ++k){
+ 		for(ssize_t j = 1; j < num_y-1; ++j){
+ 			for(ssize_t i = 1; i < num_x-1; ++i)
+			{	
+				vec3 idx = vec3(i, j, k);
+				glm::bvec3 eqL = glm::equal(idx, zero);
+				glm::bvec3 eqR = glm::equal(idx, size);
+				if ( glm::any(eqL) || glm::any(eqR) )
+					 continue;
+				
+				float value = neighbourBOX(idx);
+				voxels[i+j*num_x+k*num_x*num_y].value = value;
+ 			}
+ 		}
+ 	}
+}
+
+float SVoxelGrid::neighbourBOX(const vec3& v)
+{	 
+	float val = 0.f;
+	for(size_t k = 0; k < 3; ++k)
+		for(size_t j = 0; j < 3; ++j)
+			for(size_t i = 0; i < 3; ++i)
+				val += voxels[(v.x-1+i)+(v.y-1+j)*num_x+(v.z-1+k)*num_x*num_y].value;
+	
+	return (1.0f/27.0f)*val;
+}
+
 void SVoxelGrid::print()
 {
 	for(uint i=0; i < num_x*num_y*num_z; ++i)

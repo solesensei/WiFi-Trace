@@ -76,6 +76,7 @@ int main(int argc, char** argv)
 
 
     router.fill_grid(scene.figures, grid, 20000);
+    grid.filter();
     scene.figures.push_back(&router);
     scene.lights.push_back(light);
       

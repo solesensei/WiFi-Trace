@@ -6,7 +6,9 @@
 #include <tuple>
 #include <assert.h>
 #include <iostream>
-// #include <limits>
+#include <cstdlib>
+#include <ctime>
+#include <limits>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -55,10 +57,13 @@ struct SRay
     vec3 orig; // Cast point
     vec3 dir; // Cast direction
     float strength;
+	float refl; // Reflection coefficient
 
-    SRay(const vec3& origin, const vec3& direction, float s = 0.f): orig(origin), dir(direction), strength(s)
+    SRay(const vec3& origin, const vec3& direction, float s = 0.f, float reflect = 0.f):
+		orig(origin), dir(direction), strength(s), refl(reflect)
     {}
-    SRay (): orig(vec3()), dir(vec3()), strength(0)
+    SRay (): 
+		orig(vec3()), dir(vec3()), strength(0), refl(0)
     {}
     void set_strength(float s);
     static SRay build_ray(float x, float y, const SCamera& camera);
@@ -141,5 +146,7 @@ struct SVoxelGrid
 	
     void initialize(); // Filling voxels vector
 	int find(vec3 point); // Get voxel via point
+	void filter(); // Box filter, reduce noises
+	float neighbourBOX(const vec3&);
 	void print(); // Print all voxels values
 };

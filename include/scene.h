@@ -62,6 +62,7 @@ public:
 	std::vector<CMesh> meshes;
 	vec3 topleft;
 	vec3 botright;
+	vec3 position;
 
-	CModel(const char* filename);
+	CModel(const char* filename, const vec3& pos = vec3(0.f,0.f,0.f));
 };

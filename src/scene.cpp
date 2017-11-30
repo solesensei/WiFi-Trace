@@ -71,8 +71,9 @@ CMesh::CMesh(std::vector<vec3> Vertices, std::vector<vec3> Normals)
 	normals = Normals;
 }
 
-CModel::CModel(const char* filename)
+CModel::CModel(const char* filename, const vec3& pos)
 {
+    position = pos;
     float max = std::numeric_limits<float>::max();
  	min_x = min_y = min_z = max;
  	max_x = max_y = max_z = -max;
@@ -113,15 +114,16 @@ CMesh CModel::getMesh(aiMesh *mesh)
     std::vector<vec3> normals;
 
     for(uint i = 0; i < mesh->mNumVertices; ++i){
-    	vec3 vector;
-    	vector.x = mesh->mVertices[i].x;
-    	vector.y = mesh->mVertices[i].y;
-    	vector.z = mesh->mVertices[i].z;
-        vertices.push_back(vector);
-        vector.x = mesh->mNormals[i].x;
-        vector.y = mesh->mNormals[i].y;
-        vector.z = mesh->mNormals[i].z;
-        normals.push_back(vector);
+    	vec3 v;
+    	v.x = mesh->mVertices[i].x;
+    	v.y = mesh->mVertices[i].y;
+    	v.z = mesh->mVertices[i].z;
+        v += position; 
+        vertices.push_back(v);
+        v.x = mesh->mNormals[i].x;
+        v.y = mesh->mNormals[i].y;
+        v.z = mesh->mNormals[i].z;
+        normals.push_back(v);
     }
 
     return CMesh(vertices, normals);
