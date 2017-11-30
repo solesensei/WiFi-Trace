@@ -120,10 +120,6 @@ void SVoxelGrid::filter()
  			for(ssize_t i = 1; i < num_x-1; ++i)
 			{	
 				vec3 idx = vec3(i, j, k);
-				glm::bvec3 eqL = glm::equal(idx, zero);
-				glm::bvec3 eqR = glm::equal(idx, size);
-				if ( glm::any(eqL) || glm::any(eqR) )
-					 continue;
 				
 				float value = neighbourBOX(idx);
 				voxels[i+j*num_x+k*num_x*num_y].value = value;

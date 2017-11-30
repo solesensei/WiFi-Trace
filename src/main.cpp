@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     SCamera front(vec3(-13.f,3.f,5.f), glm::normalize(vec3(0.5f,1.f,0.f)), glm::normalize(vec3(0.4f,0.f,1.f)));
     SCamera top(vec3(0.f,20.f,0.f), vec3(0.f, 0.f, -1.f), vec3(1.f,0.f,0.f));
     SLight light(vec3(-6.f, 10.f, -10.f), 10.f);
-    // SLight light2(vec3(-6.f, 0.f, 1.f), 3000.f);
+    SLight light2(vec3(20.f, 20.f, 1.f), 1.f);
       
       /* Model setting up */
     CModel model(MODEL_PATH);
@@ -68,7 +68,6 @@ int main(int argc, char** argv)
 
       /* Scene creation */
     CScene scene(model);
-    // scene.cameras.push_back(camera);
     // scene.cameras.push_back(front);
     // scene.cameras.push_back(top);
     for(uint i = 0; i < model.triangles.size(); ++i)
@@ -79,6 +78,7 @@ int main(int argc, char** argv)
     grid.filter();
     scene.figures.push_back(&router);
     scene.lights.push_back(light);
+    scene.lights.push_back(light2);
       
       /* Ray Tracer render setting up */
     CTracer tracer_front(front, &scene, grid);

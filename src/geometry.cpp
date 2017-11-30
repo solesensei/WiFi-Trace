@@ -173,7 +173,7 @@ float SRouter::calc_strength(vec3 point)
 	if(distance < radius)
 		return 0.f;
 	else
-		return std::min(sig_strength, sig_strength/(distance*distance));
+		return min(sig_strength, sig_strength/(distance*distance));
 }
 
 void SRouter::march(SRay& ray, std::vector<Figure*> figures, SVoxelGrid& grid, int r_step)

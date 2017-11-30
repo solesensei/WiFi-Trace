@@ -42,7 +42,7 @@ vec3 CTracer::MarchRay(const SRay& ray, vec3 color, float t_closest){
         if(index>0){
             float value = grid.voxels[index].value;
             routerColor += vec3(value/7.f, value/30.f, value/1000.f);
-            routerColor = min(vec3(255.f,200.f,100.f), routerColor);
+            routerColor = glm::min(vec3(255.f,200.f,100.f), routerColor);
 
             color =  color * (1 - alpha) + routerColor*alpha;
         }
@@ -110,9 +110,10 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
                                                   pHit,
                                                   camera,
                                                   pScene->lights[k]);
-            phong_color = min(vec3(255.f, 255.f, 255.f), phong_color);
+            phong_color = glm::min(vec3(255.f, 255.f, 255.f), phong_color);
             res_color += MarchRay(eye, phong_color, t_closest);
         }
+        res_color = glm::min(vec3(255.f, 255.f, 255.f), res_color);
     }
     return vec3_to_color(res_color);
 }
