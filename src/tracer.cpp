@@ -20,28 +20,28 @@ vec3 CTracer::MarchRay(const SRay& ray, vec3 color, float t_closest){
 
     float depth = 0.0f;
     float step = 0.005;
-    int index;
-    int previous_index;
+    int idx;
+    int p_idx;
     bool first = true;
-    float alpha = 0.05f;
+    float alpha = 0.04f;
     vec3 routerColor = vec3(0.0f,0.0f,0.0f);;
     for(int i = 0; i < MARCH_STEPS; ++i){
         vec3 point = ray.orig + vec3(ray.dir.x*depth, ray.dir.y*depth, ray.dir.z*depth);
         depth+=step;
         if(first){
-            index = grid.find(point);
+            idx = grid.find(point);
             first = false;
         }
         else{
-            previous_index = index;
-            index = grid.find(point);
-            if(index==previous_index){
+            p_idx = idx;
+            idx = grid.find(point);
+            if(idx==p_idx){
                 continue;
             }
         }
-        if(index>0){
-            float value = grid.voxels[index].value;
-            routerColor += vec3(value/7.f, value/30.f, value/1000.f);
+        if(idx>0){
+            float value = grid.voxels[idx].value;
+            routerColor += vec3(value/7.f, value/30.f, value/100.f);
             routerColor = glm::min(vec3(255.f,200.f,100.f), routerColor);
 
             color =  color * (1 - alpha) + routerColor*alpha;
@@ -106,7 +106,7 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
             vec3 phong_color = SPhong::phong_calc(vec3(0.1f, 0.1f, 0.1f), // ambient reflection constant
                                                   pScene->figures[i_closest]->color*0.7f, // diffuse reflection constant
                                                   vec3(0.1f, 0.1f, 0.1f), // specular reflection constant
-                                                  100.f,  // shininess constant for this material
+                                                  10.f,  // shininess constant for this material
                                                   nHit, 
                                                   pHit,
                                                   camera,
@@ -119,19 +119,25 @@ std::tuple<uint,uint,uint> CTracer::TraceRay(const SRay& ray)
     return vec3_to_color(res_color);
 }
 
-void CTracer::RenderImage(int width, int height, const char* name)
+void CTracer::RenderImage(int width, int height)
 {
-    Image res_image(height, width);
-    camera.width = float(width);
-    camera.height = float(height);
-    uint i,j;
-    #pragma omp parallel for private(i,j)
-    for(i = 0; i < res_image.n_rows; ++i)
-		for(j = 0; j < res_image.n_cols; ++j){	
-			SRay ray = MakeRay(j, i);
-			res_image(i, j) = TraceRay(ray);
-		}
-    
-    std::string path = string("../../img/") + name;
-    pScene->save_image(res_image, path.c_str());
+    for(uint k = 0; k < pScene->cameras.size(); ++k){
+        
+        camera = pScene->cameras[k];
+        
+        Image res_image(height, width);
+        camera.width = float(width);
+        camera.height = float(height);
+        
+        uint i,j;
+        #pragma omp parallel for private(i,j)
+        for(i = 0; i < res_image.n_rows; ++i)
+            for(j = 0; j < res_image.n_cols; ++j){	
+                SRay ray = MakeRay(j, i);
+                res_image(i, j) = TraceRay(ray);
+            }
+        
+        std::string path = string("../../img/") + camera.name + string(".bmp");
+        pScene->save_image(res_image, path.c_str());
+    }
 }

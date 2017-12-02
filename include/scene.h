@@ -36,7 +36,6 @@ public:
 	std::vector<vec3> normals;
 
 	CMesh(std::vector<vec3> vertices,std::vector<vec3> normals);
-
 };
 
 class CModel

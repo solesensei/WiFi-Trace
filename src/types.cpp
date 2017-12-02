@@ -4,11 +4,12 @@ using std::min;
 using std::cerr;
 using std::endl;
 
-SCamera::SCamera(vec3 Pos, vec3 Up, vec3 Right, float FOV):
+SCamera::SCamera(vec3 Pos, vec3 Up, vec3 Right, const char* Name, float FOV):
     pos (Pos),
     up (Up),
     right (Right),
     front ( glm::normalize(glm::cross(up, right)) ), // vectors multiply, cross product
+	name (Name),
     fov (FOV)
 {}
 
@@ -76,8 +77,7 @@ SVoxelGrid::SVoxelGrid(vec3 Topleft, vec3 Botright)
 
 	float min_axis = min(sub.x, min(sub.y, sub.z));
 
-	voxel_side = min_axis/10;
-
+	voxel_side = min_axis/20;
 		// calculate number of voxels per axis
 	num_x = sub.x / voxel_side;
 	num_y = sub.y / voxel_side;
@@ -118,7 +118,7 @@ void SVoxelGrid::filter()
  			for(ssize_t i = 1; i < num_x-1; ++i)
 			{	
 				vec3 idx = vec3(i, j, k);
-				
+
 				float value = neighbourBOX(idx);
 				voxels[i+j*num_x+k*num_x*num_y].value = value;
  			}
@@ -128,12 +128,12 @@ void SVoxelGrid::filter()
 
 float SVoxelGrid::neighbourBOX(const vec3& v)
 {	 
-	float val = 0.f;
+	float val = 0;
 	for(size_t k = 0; k < 3; ++k)
 		for(size_t j = 0; j < 3; ++j)
 			for(size_t i = 0; i < 3; ++i)
 				val += voxels[(v.x-1+i)+(v.y-1+j)*num_x+(v.z-1+k)*num_x*num_y].value;
-	
+				
 	return (1.0f/27.0f)*val;
 }
 
@@ -142,5 +142,5 @@ void SVoxelGrid::print()
 	uint size = num_x*num_y*num_z;
 	for(uint i = 0; i < size; ++i)
 		if(voxels[i].value > 0)
-			cerr << voxels[i].value << endl;
+			std::cout << voxels[i].value << endl;
 }

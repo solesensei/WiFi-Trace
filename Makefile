@@ -8,8 +8,6 @@ CXXFLAGS += -Wformat-security -Wignored-qualifiers -Winit-self \
 		-Wmissing-field-initializers -Wctor-dtor-privacy \
 		-Wnon-virtual-dtor -Wstrict-null-sentinel  \
 		-Woverloaded-virtual -Wsign-promo -Wextra -pedantic -fopenmp \
-		# -Wold-style-cast \
-		#  -Werror
 
 # Directories with source code
 SRC_DIR = src
@@ -27,6 +25,7 @@ BRIDGE_DIR = bridge
 BRIDGE_MAKE = bridge/Makefile
 BRIDGE_INCLUDE_DIR = bridge/include
 BRIDGE_LIBRARY_DIR = bridge/lib
+CONFIG_DIR = bridge/config
 
 # Which libraries to prepare for usage: targets must be defined in BRIDGE_MAKE.
 BRIDGE_TARGETS = glm easybmp argvparser assimp
@@ -80,7 +79,9 @@ bridge.touch: $(wildcard $(BRIDGE_INCLUDE_DIR)/*) \
 # Rules for compiling targets
 $(BIN_DIR)/visualize: $(OBJFILES) bridge.touch	
 	$(CXX) $(CXXFLAGS) $(filter %.o, $^) -o $@ $(LDFLAGS)
-	cp $(BRIDGE_DIR)/config_file $(BIN_DIR)/
+	cp $(CONFIG_DIR)/config_file1.cfg $(BIN_DIR)/
+	cp $(CONFIG_DIR)/config_file2.cfg $(BIN_DIR)/
+	cp $(CONFIG_DIR)/config_file3.cfg $(BIN_DIR)/
 
 # Pattern for generating dependency description files (*.d)
 $(DEP_DIR)/%.d: $(SRC_DIR)/%.cpp

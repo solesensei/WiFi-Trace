@@ -30,10 +30,9 @@ typedef glm::uvec2 uvec2;
 typedef glm::uvec3 uvec3;
 typedef glm::mat4 mat4;
 
-// ============
 using std::cerr;
 using std::endl;
-// ============
+using std::string;
 
 struct SCamera
 {
@@ -41,13 +40,15 @@ struct SCamera
 	vec3 up;
 	vec3 right;
 	vec3 front;  // Orthonormal basis = cross [up, right]
+	string name; // Camera name
 	float fov; // Field of view, angle
- 
+
 	float width, height; // Image resolution
 
 	SCamera(vec3 Pos 	  = vec3(0.f, 0.f, 2.f),
 		    vec3 Up 	  = vec3(0.f, 1.f, 0.f),
 		   	vec3 Right  = vec3(-1.f, 0.f, 0.f),
+			const char* Name = "default",
 		    float FOV = PI/2
 		   );
 };
@@ -100,7 +101,7 @@ struct SPhong
         
         float dot_light_normal = glm::dot(dir_light, normal); 
 		float dot_reflect_view = glm::dot(dir_reflect, dir_view); 
-		
+
         float radius = glm::distance(light.pos, hit);
         float area = 4*PI*radius*radius*1e-5f;
 	    vec3 color = light.intens / area;

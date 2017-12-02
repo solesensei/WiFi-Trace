@@ -11,7 +11,11 @@ Visualization of WiFi coverage with ray tracing algorithm
 
 ### Launch script 
 
-        bash test.sh # build and run with config_file
+        # build and run with config_file
+        bash test.sh [config number 1-3]
+
+        # example: 
+        bash test.sh 2 # setup with config 2 
    
 ---
 ## Work algoritm
@@ -19,10 +23,10 @@ Visualization of WiFi coverage with ray tracing algorithm
 ### Basic part
 
 1. Read config_file and setup scene
-2. Build and fill voxel grid with ray marching algorithm
+2. Build and fill voxel grid
 3. Antialiasing grid with box filter
 4. Visializate scene with camera back ray tracing
-5. Colorize scene with ray marching grid
+5. Colorize scene with ray marching algorithm
 6. Save result to image.bmp
 
 ### Additional part
