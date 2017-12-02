@@ -16,7 +16,7 @@ void default_run()
 {
     int xRes = 800;  // Default resolution
     int yRes = 600;
-    const char* model_path = "../../models/new.obj";
+    const char* model_path = "../../models/room1.obj";
         /* Camera and Light creation */
     SCamera front(vec3(-13.f,3.f,5.f), glm::normalize(vec3(0.5f,1.f,0.f)), glm::normalize(vec3(0.4f,0.f,1.f)), "front");
     SCamera top(vec3(0.f,20.f,0.f), vec3(0.f, 0.f, -1.f), vec3(1.f,0.f,0.f), "top");

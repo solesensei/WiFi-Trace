@@ -54,7 +54,10 @@ public:
 		// Check box overflows and correct max,min values
 	void checkBound(glm::vec3 vertice);
 		// Initialize topleft and botright with bounds
- 	void setBound();
+	void setBound();
+
+	// void addModel(const char* path, const vec3& pos);
+
  
 public:
 	std::vector<STriangle> triangles;

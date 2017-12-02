@@ -133,13 +133,12 @@ void CModel::initialize()
 {
 	for(size_t i = 0; i < meshes.size(); ++i){
 		for(size_t j = 0; j < meshes[i].vertices.size(); j+=3){
-			vec3 a = meshes[i].vertices[j];
-			vec3 b = meshes[i].vertices[j+1];
-			vec3 c = meshes[i].vertices[j+2];
-            checkBound(a);
-			checkBound(b);
-			checkBound(c);
-			STriangle temp(a, b, c, meshes[i].normals[j]);
+			vec3* vp = &meshes[i].vertices[j];
+            vec3* np = &meshes[i].normals[j];
+            checkBound(*vp);
+			checkBound(*(vp+1));
+			checkBound(*(vp+2));
+			STriangle temp(*vp, *(vp+1), *(vp+2), *np);
 			triangles.push_back(temp);
 		}
 	}
@@ -160,4 +159,6 @@ void CModel::setBound()
 {
 	topleft = vec3(min_x, max_y, max_z);
 	botright = vec3(max_x, min_y, min_z);
-} 
+}
+
+// void CModel::addModel(const char* path, const vec3& pos){}

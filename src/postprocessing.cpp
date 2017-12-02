@@ -5,7 +5,7 @@ using std::tuple;
 Image postprocessing(Image src)
 {
     Image res = autocontrast(src, 0.01);
-          res = unsharp(res);
+        // res = unsharp(res); // look better without sharping
           
     return res;
 }
@@ -55,7 +55,8 @@ Image autocontrast(Image src_image, double fraction)
         }
         Ymax = Ymax - (Ymax-Ymin)*fraction;
         Ymin = Ymin + (Ymax-Ymin)*fraction;
-        assert(Ymax > Ymin);
+        if (Ymax <= Ymin) return src_image;
+
     for (uint i = 0; i < src_image.n_rows; ++i)
         for (uint j = 0; j < src_image.n_cols; ++j)
         {
