@@ -1,4 +1,5 @@
 #include "tracer.h"
+#include "postprocessing.h"
 
 using namespace glm;
 using std::string;
@@ -138,6 +139,7 @@ void CTracer::RenderImage(int width, int height)
             }
         
         std::string path = string("../../img/") + camera.name + string(".bmp");
+        res_image = postprocessing(res_image);
         pScene->save_image(res_image, path.c_str());
     }
 }

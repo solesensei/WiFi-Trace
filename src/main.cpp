@@ -82,6 +82,6 @@ int main(int argc, char** argv)
         cout << "No config! Using default parameters." << endl;
         default_run();
     }    
-
+    
     return 0;
 }
