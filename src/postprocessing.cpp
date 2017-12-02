@@ -5,6 +5,8 @@ using std::tuple;
 Image postprocessing(Image src)
 {
     Image res = autocontrast(src, 0.01);
+          res = unsharp(res);
+          
     return res;
 }
 
@@ -20,6 +22,23 @@ tuple<uint,uint,uint> overflow_crop(const tuple<uint,uint,uint>& pix)
     return std::make_tuple(r,g,b);
 
 }
+
+tuple <uint,uint,uint> unaryOp::operator()(const Image& neighbourhood) const
+{
+    uint r,g,b;
+    auto sr = 0, sg = 0, sb = 0;
+    auto borders = 2*radius+1;
+    for(uint i = 0; i < borders; ++i)
+        for(uint j = 0; j < borders; ++j)
+        {
+            std::tie(r,g,b) = neighbourhood(i,j);
+            sr += r * kernel(i,j);
+            sg += g * kernel(i,j); 
+            sb += b * kernel(i,j); 
+        }
+    
+    return overflow_crop(std::make_tuple(sr,sg,sb));
+} 
 
 Image autocontrast(Image src_image, double fraction)
 {    
@@ -48,4 +67,13 @@ Image autocontrast(Image src_image, double fraction)
             src_image(i,j) = overflow_crop(std::make_tuple(fr, fg, fb));
         }
     return src_image;
+}
+
+Image unsharp(Image src_image)
+{
+    Matrix<double> kernel = {{-1.0/6.0, -2.0/3.0, -1.0/6.0},
+                             {-2.0/3.0, 13.0/3.0, -2.0/3.0},
+                             {-1.0/6.0, -2.0/3.0, -1.0/6.0}};
+
+    return src_image.unary_map(unaryOp(kernel));  
 }
