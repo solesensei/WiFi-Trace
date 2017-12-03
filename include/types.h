@@ -16,6 +16,9 @@
 #include "matrix.h"
 #include "EasyBMP.h"
 
+#include "Environment.h"
+#include "Timer.h"
+
 #define PI 3.1415926535897932384626433832795028841971
 #define MARCH_STEPS 2000
 #define REC_STEPS 3

@@ -15,8 +15,8 @@ using std::endl;
 void default_run()
 {
     cout << ycol << "Default setup..." << reset << endl;
-    int xRes = 800;  // Default resolution
-    int yRes = 600;
+    int xRes = 1920;  // Default resolution
+    int yRes = 1080;
     cout << wbcol << "Res: " << reset << xRes << " x " << yRes << endl;
     const char* model_path = "../../models/room1.obj";
     cout << wbcol << "Model: " << reset << model_path << endl;
@@ -90,6 +90,9 @@ int main(int argc, char** argv)
         cerr << cmd.parseErrorDescription(result) << endl;
         return result;
     }
+    
+    Timer t; // measure runtime
+    t.start();
 
     bool setup = cmd.foundOption("config_file");
     if (setup){
@@ -100,6 +103,8 @@ int main(int argc, char** argv)
         cout << wbcol << "No config! Using default parameters." << reset <<endl;
         default_run();
     }    
+
+    t.check("\nCPU runtime");
     
     return 0;
 }
