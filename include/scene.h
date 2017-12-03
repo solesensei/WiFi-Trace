@@ -44,7 +44,7 @@ class CModel
 	float max_x, max_y, max_z;
 public: 
 		// Import model with assimp  	
- 	void load(const char* filename);
+ 	bool load(const char* filename);
 	 	// Calculate assimp node meshes
  	void calc_node(aiNode *node, const aiScene *scene);
 		// Set up model filling meshes and triangles

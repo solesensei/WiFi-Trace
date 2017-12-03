@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "tracer.h"
+#include "ColorTerminal.h"
 
 using std::string;
 using std::cerr;
@@ -77,23 +78,29 @@ CModel::CModel(const char* filename, const vec3& pos)
     float max = std::numeric_limits<float>::max();
  	min_x = min_y = min_z = max;
  	max_x = max_y = max_z = -max;
-    load(filename);
+    bool loaded = load(filename);
+    if(!loaded){
+        cerr << "Model didn't load" << endl;
+        exit(0);
+    }
 }
 
-void CModel::load(const char* filename)
+bool CModel::load(const char* filename)
 {
 	Assimp::Importer import;
     const aiScene *scene = import.ReadFile(filename, aiProcess_Triangulate);	
 	
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
-        cerr << "Assimp import error: " << import.GetErrorString() << endl;
-        return;
+        cerr << rcol << "Assimp import error: " << reset << import.GetErrorString() << endl;
+        return false;
     }
 
     calc_node(scene->mRootNode, scene);
     initialize();
     setBound();
+
+    return true;
 }
 
 void CModel::calc_node(aiNode *node, const aiScene *scene)
