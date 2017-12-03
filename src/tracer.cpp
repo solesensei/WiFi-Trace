@@ -125,21 +125,25 @@ void CTracer::RenderImage(int width, int height)
     for(uint k = 0; k < pScene->cameras.size(); ++k){
         
         camera = pScene->cameras[k];
-        
+        cerr << camera.name << " view rendering ...";
+
         Image res_image(height, width);
         camera.width = float(width);
         camera.height = float(height);
-        
+
         uint i,j;
         #pragma omp parallel for private(i,j)
         for(i = 0; i < res_image.n_rows; ++i)
             for(j = 0; j < res_image.n_cols; ++j){	
                 SRay ray = MakeRay(j, i);
                 res_image(i, j) = TraceRay(ray);
+                if (i%100 == 0 && j == 0) 
+                    cerr << "..."; 
             }
-        
-        std::string path = string("../../img/") + camera.name + string(".bmp");
+        cerr << " completed" << endl;
         res_image = postprocessing(res_image);
+        std::string path = string("../../img/") + camera.name + string(".bmp");
         pScene->save_image(res_image, path.c_str());
+        cerr << "Saved " << path << endl;
     }
 }

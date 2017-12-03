@@ -21,22 +21,22 @@ vec3 ConfigParser::getVec()
 
 bool ConfigParser::setup()
 {
-    cout << "Config setup..." << endl;
+    cout << ycol << "Config setup..." << reset <<endl;
     getResolution();
     getModel();
     getRouter();
     getCamera();
     getLight();
     if (isGood)
-        cout << "Setup complete" << endl;
+        cout << ycol << "Setup complete" << reset << endl;
     else
-        cout << "Setup terminated" << endl;
+        cout << rcol << "Setup terminated" << reset <<endl;
     return isGood;
 }
 
 void ConfigParser::launch()
 {
-    cout << "Launch render..." << endl;
+    cout << ccol << "Launch render..." << reset << endl;
     int xRes = v.width;  
     int yRes = v.height;
     const char* model_path = v.model_path.c_str();
@@ -60,7 +60,7 @@ void ConfigParser::launch()
     CTracer tracer(&scene, grid);
 
     tracer.RenderImage(xRes, yRes);
-    cout << "Render complete" << endl;    
+    cout << ccol << "Render complete" << reset << endl;    
 }
 
 bool ConfigParser::skip()
@@ -95,7 +95,7 @@ bool ConfigParser::next()
 void ConfigParser::getResolution()
 {
     if (!skip()){
-        cout << "config error: no resolution found" << endl;
+        cout << rcol << "config error: no resolution found" << reset << endl;
         isGood = false;
         return;
     }
@@ -104,25 +104,25 @@ void ConfigParser::getResolution()
     file >> str;
     v.height = stoi(str);
     
-    cout << "Res: " << v.width << " x " << v.height << endl;
+    cout << wbcol << "Res: " << reset << v.width << " x " << v.height << endl;
 }
 
 void ConfigParser::getModel()
 {
     if (!skip()){
-        cout << "config error: no model.obj path found" << endl;
+        cout << rcol "config error: no model.obj path found" << reset << endl;
         isGood = false;        
         return;
     }
     v.model_path = str.c_str();
     
-    cout << "Model: " << v.model_path << endl;
+    cout << wbcol << "Model: " << reset << v.model_path << endl;
 }
 
 void ConfigParser::getRouter()
 {
     if (!skip()){
-        cout << "config error: no router found" << endl;
+        cout << rcol "config error: no router found" << reset << endl;
         isGood = false;        
         return;
     }
@@ -134,18 +134,18 @@ void ConfigParser::getRouter()
     file >> str;
     v.r_sig = stof(str);         
 
-    cout << "Router placed" << endl;
+    cout << wbcol << "Router:" << reset << " placed" << endl;
 }
 void ConfigParser::getCamera()
 {    
     if (!skip()){
-        cout << "config error: no cameras found" << endl;
+        cout << rcol "config error: no cameras found" << reset << endl;
         isGood = false;        
         return;
     }
     int num = 1; // camera number
     do{
-        cout << "Camera " << num++ << ": ";
+        cout << wbcol << "Camera " << num++ << ": " << reset;
         vec3 pos = getVec();
         file >> str;
         vec3 up = getVec();
@@ -162,13 +162,13 @@ void ConfigParser::getCamera()
 void ConfigParser::getLight()
 {
     if (!skip()){
-        cout << "config error: no lights found" << endl;
+        cout << rcol "config error: no lights found" << reset << endl;
         isGood = false;        
         return;
     }
     int num = 1; // light number
     do{
-        cout << "Light " << num++ << ": ";
+        cout << wbcol << "Light " << num++ << ": " << reset;
         vec3 pos = getVec();
         file >> str;
         float intens = stof(str);

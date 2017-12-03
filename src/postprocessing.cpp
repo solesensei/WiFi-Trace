@@ -4,9 +4,12 @@ using std::tuple;
 
 Image postprocessing(Image src)
 {
+    cerr << "Postprocessing starts ..." << endl;
     Image res = autocontrast(src, 0.01);
-        // res = unsharp(res); // look better without sharping
-          
+    cerr << " completed" << endl;
+    // res = unsharp(res); // look better without sharping
+    // cerr << " completed" << endl;
+    
     return res;
 }
 
@@ -42,6 +45,7 @@ tuple <uint,uint,uint> unaryOp::operator()(const Image& neighbourhood) const
 
 Image autocontrast(Image src_image, double fraction)
 {    
+    cerr << "autocontrast ...";
     double Ymin = 255;
     double Ymax = 0;
     double r_cl,g_cl,b_cl;
@@ -67,11 +71,13 @@ Image autocontrast(Image src_image, double fraction)
         
             src_image(i,j) = overflow_crop(std::make_tuple(fr, fg, fb));
         }
+
     return src_image;
 }
 
 Image unsharp(Image src_image)
 {
+    cerr << "Unsharping starts ...";
     Matrix<double> kernel = {{-1.0/6.0, -2.0/3.0, -1.0/6.0},
                              {-2.0/3.0, 13.0/3.0, -2.0/3.0},
                              {-1.0/6.0, -2.0/3.0, -1.0/6.0}};

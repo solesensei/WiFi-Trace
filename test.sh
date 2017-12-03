@@ -10,7 +10,6 @@ then
     echo 
     echo "Test config"
     echo CONFIG: config_file$1.cfg
-    echo
     sudo ./visualize --config_file config_file$1.cfg
 else # no args
     # Make project
@@ -19,6 +18,5 @@ else # no args
     # Launch project with default parameters
     echo 
     echo "Test default"
-    echo
     sudo ./visualize 
 fi
