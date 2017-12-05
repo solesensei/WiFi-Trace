@@ -12,7 +12,7 @@ then
         echo 
         echo "Test config"
         echo CONFIG: config_file$1.cfg
-        sudo ./visualize --config_file config_file$1.cfg
+        time sudo ./visualize --config_file config_file$1.cfg
     else
         echo no such config file [config_file$1.cfg]. Aborted.
         echo choose \'1-3\' configs, or use default parameters    
@@ -24,5 +24,5 @@ else # no args
     # Launch project with default parameters
     echo 
     echo "Test default"
-    sudo ./visualize 
+    time sudo ./visualize 
 fi

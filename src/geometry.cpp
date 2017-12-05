@@ -155,7 +155,9 @@ SRouter::SRouter(vec3 Position,
 void SRouter::fill_grid(std::vector<Figure*> figures, SVoxelGrid& grid, uint num)
 {
 		// build random ray
-	for(uint i = 0; i < num ; ++i)
+    uint i;
+    #pragma omp parallel for private(i)
+	for(i = 0; i < num ; ++i)
     {
         float x = rand() / (RAND_MAX/(2.f)) - 1;
         float y = rand() / (RAND_MAX/(2.f)) - 1;
